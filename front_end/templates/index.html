@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南京大学招生助手系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Apple Design System - 玻璃质感主题 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-bg-secondary: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --apple-blue: #007AFF;
+            --apple-green: #34C759;
+            --apple-red: #FF3B30;
+            --apple-orange: #FF9500;
+            --apple-purple: #AF52DE;
+            --apple-teal: #5AC8FA;
+            --text-primary: rgba(0, 0, 0, 0.87);
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --backdrop-blur: blur(20px);
+        }
+
+        body { 
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 120%;
+            height: 120%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%),
+                        linear-gradient(-45deg, transparent 30%, rgba(52, 199, 89, 0.1) 50%, transparent 70%),
+                        linear-gradient(135deg, transparent 40%, rgba(0, 122, 255, 0.15) 60%, transparent 80%);
+            z-index: -1;
+            animation: waveFlow 25s ease-in-out infinite;
+        }
+
+        @keyframes waveFlow {
+            0%, 100% { 
+                transform: translateX(-10%) translateY(-10%) rotate(0deg);
+                opacity: 0.8;
+            }
+            25% { 
+                transform: translateX(5%) translateY(-5%) rotate(90deg);
+                opacity: 1;
+            }
+            50% { 
+                transform: translateX(10%) translateY(5%) rotate(180deg);
+                opacity: 0.6;
+            }
+            75% { 
+                transform: translateX(-5%) translateY(10%) rotate(270deg);
+                opacity: 1;
+            }
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(-45deg, #007AFF, #AF52DE, #34C759, #FF9500);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientFlow 8s ease-in-out infinite;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 12px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: var(--text-primary) !important;
+        }
+
+        .nav-link.active {
+            background: var(--apple-blue);
+            color: white !important;
+            border-color: var(--apple-blue);
+        }
+
+        .nav-link.active:hover {
+            background: #0056D0;
+            color: white !important;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* 主要内容区域 */
+        .hero-section {
+            padding: 4rem 0;
+            text-align: center;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(-45deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientFlow 10s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 400;
+        }
+
+        /* 玻璃质感卡片 */
+        .glass-card { 
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(31, 38, 135, 0.5);
+        }
+
+        .glass-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(-45deg, var(--apple-blue), var(--apple-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .glass-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* Apple按钮样式 */
+        .btn {
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: none;
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--apple-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056D0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.4);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--apple-green);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #30A46C;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 199, 89, 0.4);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--apple-orange);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #E8890C;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 149, 0, 0.4);
+            color: white;
+        }
+
+        /* 功能网格 */
+        .features-grid {
+            margin-top: 4rem;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .feature-card {
+            height: 100%;
+        }
+
+        /* 消息通知模块 */
+        .notification-section {
+            margin: 4rem 0;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .notification-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            position: relative;
+            min-height: 200px;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(31, 38, 135, 0.5);
+        }
+
+        .notification-icon {
+            font-size: 2rem;
+            color: var(--apple-blue);
+            background: rgba(0, 122, 255, 0.1);
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .notification-scroll {
+            flex: 1;
+            max-height: 160px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .notification-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .notification-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        .notification-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        .notification-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .notification-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item span.urgent {
+            background: linear-gradient(135deg, #FF3B30, #FF6B6B);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .notification-item span.important {
+            background: linear-gradient(135deg, #FF9500, #FFB347);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .notification-item span.normal {
+            background: linear-gradient(135deg, #007AFF, #5AC8FA);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .notification-item span.time {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 4rem;
+            animation: fadeInUp 1s ease 1.2s both;
+        }
+
+        /* 功能特色说明区域 */
+        .features-description {
+            animation: fadeInUp 1s ease 0.9s both;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .glass-card {
+                padding: 1.5rem;
+            }
+
+            .announcement-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+            .announcement-icon {
+                margin: 0 0 1rem 0;
+            }
+
+            .announcement-content {
+                padding: 1rem;
+            }
+
+            .announcement-item {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .item-badge {
+                margin: 0 0 1rem 0;
+                align-self: center;
+            }
+
+            .announcement-footer {
+                padding: 1rem;
+            }
+
+            .announcement-footer .btn {
+                width: 100%;
+                margin: 0.25rem 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+<div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-graduation-cap me-2"></i>
+                南京大学招生助手
+            </a>
+            
+            <!-- 导航菜单 -->
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="/">
+                    <i class="fas fa-home me-1"></i>首页
+                </a>
+                <a class="nav-link" href="/allocation_analysis">
+                    <i class="fas fa-chart-pie me-1"></i>名额分配分析
+                </a>
+                <a class="nav-link" href="/student_management">
+                    <i class="fas fa-users me-1"></i>考生信息管理
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="showComingSoon('Love Yourself')">
+                    <i class="fas fa-heart me-1"></i>Love Yourself
+                </a>
+    </div>
+                </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <!-- 英雄区域 -->
+        <div class="hero-section">
+            <h1 class="hero-title">智能招生管理系统</h1>
+            <p class="hero-subtitle">为南京大学招生工作提供专业、高效、智能的数据分析与决策支持</p>
+        </div>
+
+        <!-- 功能卡片网格 -->
+        <div class="features-grid">
+            <div class="row g-4">
+                <!-- 名额分配分析 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="glass-card feature-card">
+                        <div class="icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h3>名额分配分析</h3>
+                        <p>智能分析招生方案，生成最优录取方案，支持多种分配策略和调整方案</p>
+                        <a href="/allocation_analysis" class="btn btn-primary">
+                            <i class="fas fa-rocket me-2"></i>开始分析
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 考生信息管理 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="glass-card feature-card">
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>考生信息管理</h3>
+                        <p>全面的考生信息管理系统，包括数据导入、信息查询、统计分析、档案管理等功能</p>
+                        <a href="/student_management" class="btn btn-success">
+                            <i class="fas fa-arrow-right me-2"></i>进入管理
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Love Yourself -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="glass-card feature-card">
+                        <div class="icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>💝 Love Yourself</h3>
+                        <p>关爱招生工作人员身心健康的专业平台，提供压力管理、时间规划、健康监测等服务</p>
+                        <button class="btn btn-warning" onclick="showComingSoon('Love Yourself')">
+                            <i class="fas fa-cog me-2"></i>功能开发中
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 消息通知 -->
+        <div class="notification-section">
+            <div class="row">
+                <div class="col-12">
+                    <div class="notification-card">
+                        <div class="notification-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="notification-scroll">
+                            <div class="notification-item">
+                                <span class="urgent">紧急</span>
+                                2025年春季招生工作即将启动，请确保名额分配系统运行正常
+                                <span class="time">12-29 14:30</span>
+                            </div>
+                            <div class="notification-item">
+                                <span class="important">重要</span>
+                                系统升级完成，新增智能分配算法和美观界面
+                                <span class="time">12-28 09:15</span>
+                </div>
+                            <div class="notification-item">
+                                <span class="normal">通知</span>
+                                系统自动备份所有招生数据，如有异常请联系技术支持
+                                <span class="time">12-27 16:45</span>
+                </div>
+                            <div class="notification-item">
+                                <span class="normal">提醒</span>
+                                请各位招生组成员及时更新考生信息，确保数据准确性
+                                <span class="time">12-26 11:20</span>
+                </div>
+                            <div class="notification-item">
+                                <span class="important">重要</span>
+                                新增专业录取统计功能，可实时查看各专业录取情况
+                                <span class="time">12-25 15:10</span>
+        </div>
+                </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能特色说明 -->
+        <div class="row g-4 mt-4 features-description">
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <div class="icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>智能算法</h3>
+                    <p>采用先进的名额分配算法，智能分析考生志愿与专业匹配度，自动生成最优录取方案。支持多种分配策略，包括志愿优先、分数优先等。</p>
+                    </div>
+                    </div>
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <div class="icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>数据安全</h3>
+                    <p>严格遵循数据保护规范，所有考生信息经过加密处理，确保数据安全。支持临时文件自动清理，保护考生隐私信息。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="container">
+            <p>&copy; 2024 南京大学招生助手系统. 专为招生工作设计的智能化解决方案.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+        // 显示功能开发中提示
+        function showComingSoon(featureName) {
+            let features = [];
+            
+            if (featureName === 'Love Yourself') {
+                features = [
+                    '• 身心健康监测和提醒',
+                    '• 工作压力评估和缓解建议',
+                    '• 时间管理和任务规划工具',
+                    '• 健康作息时间表制定',
+                    '• 心理健康自测和调节',
+                    '• 团队关怀和互动功能',
+                    '• 工作生活平衡指导'
+                ];
+            } else {
+                features = ['• 敬请期待更多功能'];
+            }
+            
+            const message = `${featureName}功能正在开发中，敬请期待！\n\n预期功能包括：\n${features.join('\n')}`;
+            alert(message);
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('南京大学招生助手系统已加载完成');
+    });
+</script>
+</body>
+</html> 

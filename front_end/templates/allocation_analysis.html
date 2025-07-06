@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名额分配数据表 - 南京大学招生助手</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Apple Design System - 玻璃质感主题 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-bg-secondary: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --apple-blue: #007AFF;
+            --apple-green: #34C759;
+            --apple-red: #FF3B30;
+            --apple-orange: #FF9500;
+            --apple-purple: #AF52DE;
+            --apple-teal: #5AC8FA;
+            --text-primary: rgba(0, 0, 0, 0.87);
+            --text-secondary: rgba(0, 0, 0, 0.6);
+            --backdrop-blur: blur(20px);
+        }
+
+        body { 
+            padding-top: 5rem; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(60deg, transparent 65%, rgba(0, 122, 255, 0.15) 70%, transparent 75%),
+                linear-gradient(-60deg, transparent 65%, rgba(52, 199, 89, 0.12) 70%, transparent 75%),
+                linear-gradient(30deg, transparent 60%, rgba(255, 149, 0, 0.1) 65%, transparent 70%),
+                radial-gradient(ellipse at 20% 30%, rgba(175, 82, 222, 0.2) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(255, 45, 85, 0.15) 0%, transparent 50%);
+            background-size: 400px 400px, 350px 350px, 500px 500px, 600px 400px, 550px 350px;
+            z-index: -1;
+            animation: geometricFlow 28s ease-in-out infinite;
+        }
+
+        @keyframes geometricFlow {
+            0% { 
+                background-position: 0% 0%, 100% 0%, 0% 100%, 0% 0%, 100% 100%;
+                transform: scale(1) rotate(0deg);
+                opacity: 0.7;
+            }
+            25% { 
+                background-position: 30% 30%, 70% 30%, 30% 70%, 20% 20%, 80% 80%;
+                transform: scale(1.05) rotate(90deg);
+                opacity: 1;
+            }
+            50% { 
+                background-position: 60% 60%, 40% 60%, 60% 40%, 40% 40%, 60% 60%;
+                transform: scale(1.1) rotate(180deg);
+                opacity: 0.8;
+            }
+            75% { 
+                background-position: 90% 90%, 10% 90%, 90% 10%, 60% 60%, 40% 40%;
+                transform: scale(1.05) rotate(270deg);
+                opacity: 1;
+            }
+            100% { 
+                background-position: 100% 100%, 0% 100%, 100% 0%, 80% 80%, 20% 20%;
+                transform: scale(1) rotate(360deg);
+                opacity: 0.7;
+            }
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(-45deg, #007AFF, #AF52DE, #34C759, #FF9500);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientFlow 8s ease-in-out infinite;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 12px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: var(--text-primary) !important;
+        }
+
+        .nav-link.active {
+            background: var(--apple-blue);
+            color: white !important;
+            border-color: var(--apple-blue);
+        }
+
+        .nav-link.active:hover {
+            background: #0056D0;
+            color: white !important;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* 玻璃质感卡片 */
+        .card { 
+            margin-bottom: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+        }
+
+        .card-header {
+            background: var(--glass-bg-secondary);
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 20px 20px 0 0 !important;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Apple风格表格 */
+        .table-responsive {
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+        }
+
+        .table {
+            background: transparent;
+            margin-bottom: 0;
+        }
+
+        .table thead {
+            background: var(--glass-bg-secondary);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+        }
+
+        .table thead th {
+            border: none;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody tr {
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .table tbody td {
+            border: none;
+            padding: 1rem 1.25rem;
+            color: var(--text-primary);
+            vertical-align: middle;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Apple按钮样式 */
+        .btn {
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: none;
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+        }
+
+        .btn-outline-primary {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--apple-blue);
+            border: 1px solid var(--apple-blue);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--apple-blue);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+        }
+
+        .btn-outline-success {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--apple-green);
+            border: 1px solid var(--apple-green);
+        }
+
+        .btn-outline-success:hover {
+            background: var(--apple-green);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.4);
+        }
+
+        .btn-primary {
+            background: var(--apple-blue);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #0056D0;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        /* 数据概览卡片 */
+        .metric-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(31, 38, 135, 0.4);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(-45deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientFlow 10s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* 导航栏 */
+        .navbar-custom {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .navbar-brand {
+            background: linear-gradient(-45deg, #007AFF, #AF52DE, #5AC8FA, #34C759);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 0.5px;
+            animation: subtleGradient 5s ease-in-out infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 12px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: var(--text-primary) !important;
+        }
+
+        .nav-link.active {
+            background: var(--apple-blue);
+            color: white !important;
+            border-color: var(--apple-blue);
+        }
+
+        .nav-link.active:hover {
+            background: #0056D0;
+            color: white !important;
+        }
+
+        /* 专业配置网格 */
+        .major-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            max-width: 100%;
+        }
+
+        /* 文科专业网格 - 较少专业，使用较大的列 */
+        .major-input-grid.liberal-arts {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        /* 理科专业网格 - 较多专业，使用较小的列 */
+        .major-input-grid.science {
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+
+        .major-input-item {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .major-input-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(31, 38, 135, 0.3);
+        }
+
+        .major-input-item label {
+            font-weight: 600;
+            background: linear-gradient(-45deg, #007AFF, #AF52DE, #34C759, #FF9500);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: subtleGradient 6.5s ease-in-out infinite;
+        }
+
+        .major-input-item input {
+            text-align: center;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+        }
+
+        .major-input-item input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 0.2rem rgba(0, 122, 255, 0.25);
+        }
+
+        .config-section {
+            background: var(--glass-bg-secondary);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 模态框 */
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--glass-border);
+            border-radius: 20px 20px 0 0;
+            background: var(--glass-bg-secondary);
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+
+        .loading h5 {
+            background: linear-gradient(-45deg, #007AFF, #5AC8FA, #34C759, #AF52DE);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+            animation: subtleGradient 5s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+        }
+
+        .loading .text-muted {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            color: var(--apple-blue);
+        }
+
+        /* 文本颜色 */
+        .text-increase { color: var(--apple-green); }
+        .text-decrease { color: var(--apple-red); }
+        
+        /* Form controls */
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 0.2rem rgba(0, 122, 255, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            background: linear-gradient(-45deg, #007AFF, #34C759, #5AC8FA, #FF9500);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: subtleGradient 6s ease-in-out infinite;
+        }
+
+        .form-text {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-weight: 700;
+            font-size: 3rem;
+            background: linear-gradient(-45deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b, #fb5607);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding: 1.5rem;
+            animation: gradientFlow 8s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+        }
+        
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        h1::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            z-index: -1;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .lead {
+            color: var(--text-primary);
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 500;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1rem 2rem;
+            margin: 0 auto 2rem auto;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(31, 38, 135, 0.2);
+        }
+
+        h5, h6 {
+            color: var(--text-primary);
+            font-weight: 600;
+            position: relative;
+        }
+
+        .card-header h5 {
+            background: linear-gradient(-45deg, #007AFF, #34C759, #5AC8FA, #AF52DE);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            animation: subtleGradient 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+        }
+
+        @keyframes subtleGradient {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        h6 {
+            background: linear-gradient(-45deg, #AF52DE, #FF9500, #FF3B30, #34C759);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            animation: subtleGradient 7s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+        }
+
+        /* 特殊表格行样式 */
+        .table tbody tr:first-child {
+            background: rgba(0, 122, 255, 0.1);
+        }
+
+        .table tbody tr:first-child:hover {
+            background: rgba(0, 122, 255, 0.2);
+        }
+
+        /* 完美方案样式 */
+        #perfectSchemesCard {
+            border: 2px solid var(--apple-green) !important;
+            box-shadow: 0 8px 32px rgba(52, 199, 89, 0.3) !important;
+        }
+
+        #perfectSchemesCard .card-header {
+            background: linear-gradient(135deg, var(--apple-green), var(--apple-teal)) !important;
+        }
+
+        .border-success {
+            border-color: var(--apple-green) !important;
+            background: rgba(52, 199, 89, 0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .border-success:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(52, 199, 89, 0.4);
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        .border-success .card-title {
+            color: var(--apple-green) !important;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .border-success .fa-trophy {
+            color: #FFD700;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+            animation: trophyGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes trophyGlow {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+            }
+            100% {
+                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+            }
+        }
+
+        .perfect-scheme-highlight {
+            border: 2px solid var(--apple-green) !important;
+            background: rgba(52, 199, 89, 0.1) !important;
+        }
+
+        /* 层级完美方案样式 */
+        .perfect-group-header {
+            background: linear-gradient(135deg, #e3f2fd, #f8f9fa) !important;
+            border-bottom: 2px solid #2196f3;
+        }
+
+        .perfect-scheme-group {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .perfect-scheme-group:hover {
+            box-shadow: 0 8px 24px rgba(33, 150, 243, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .perfect-section-title {
+            position: relative;
+            padding-left: 1rem;
+            color: var(--apple-blue);
+            font-weight: 600;
+        }
+
+        .perfect-section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 1.5rem;
+            background: linear-gradient(45deg, var(--apple-blue), var(--apple-teal));
+            border-radius: 2px;
+        }
+
+        .nested-perfect-scheme {
+            border-left: 3px solid var(--apple-green);
+            margin-left: 0.5rem;
+            background: rgba(52, 199, 89, 0.02);
+        }
+
+        .perfect-group-changes {
+            background: rgba(33, 150, 243, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            color: var(--apple-blue);
+        }
+
+        /* 完美方案展开收起样式 */
+        .perfect-schemes-container {
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+        }
+
+        .perfect-schemes-container.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .perfect-schemes-container.expanded {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        .perfect-toggle-info {
+            background: rgba(108, 117, 125, 0.1);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px dashed rgba(108, 117, 125, 0.3);
+        }
+
+        .perfect-toggle-btn {
+            transition: all 0.2s ease;
+        }
+
+        .perfect-toggle-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 页面动态加载效果 */
+        .page-header {
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .config-card {
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+        
+        .loading-section {
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+        
+        .results-container {
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        /* 动画效果定义 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-graduation-cap me-2"></i>
+                南京大学招生助手
+            </a>
+            
+            <!-- 导航菜单 -->
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home me-1"></i>首页
+                </a>
+                <a class="nav-link active" href="/allocation_analysis">
+                    <i class="fas fa-chart-pie me-1"></i>名额分配分析
+                </a>
+                <a class="nav-link" href="/student_management">
+                    <i class="fas fa-users me-1"></i>考生信息管理
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="showComingSoon('Love Yourself')">
+                    <i class="fas fa-heart me-1"></i>Love Yourself
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row page-header">
+            <div class="col-12">
+                <h1 class="mb-4">📋 名额分配数据表</h1>
+                <p class="lead text-muted">显示专业录取、未满足承诺、滑档学生数据</p>
+            </div>
+        </div>
+
+        <!-- 配置表单 -->
+        <div class="card config-card">
+            <div class="card-header">
+                <h5 class="mb-0">📋 分析配置</h5>
+            </div>
+            <div class="card-body config-section">
+                <form id="analysisForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">选择科类</label>
+                            <select class="form-select" id="subjectType" onchange="updateMajorInputs()">
+                                <option value="liberal_arts">文科</option>
+                                <option value="science">理科</option>
+                            </select>
+                            <div class="form-text">选择要分析的学生科类</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">选择考生信息Excel文件</label>
+                            <input type="file" class="form-control" id="excelFile" accept=".xlsx,.xls" onchange="handleFileSelect()">
+                            <div class="form-text">上传包含考生信息的Excel文件（支持.xlsx和.xls格式）</div>
+                            <div id="fileStatus" class="text-muted mt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- 专业名额配置 -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h6>📚 专业招生名额配置</h6>
+                            <div id="majorInputsContainer">
+                                <!-- 动态生成专业输入框 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <span class="spinner-border spinner-border-sm me-2 d-none" id="analyzeSpinner"></span>
+                                📊 生成数据
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg ms-2" onclick="resetToDefaults()">
+                                🔄 恢复默认值
+                            </button>
+                            <button type="button" class="btn btn-info btn-lg ms-2" onclick="testModal()">
+                                🧪 测试模态框
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 加载状态 -->
+        <div class="loading loading-section" id="loadingDiv">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <h5 class="mt-3">正在生成所有可能的分配方案数据...</h5>
+            <p class="text-muted">这可能需要几秒钟时间</p>
+        </div>
+
+        <!-- 分析结果 -->
+        <div id="resultsSection" class="results-container" style="display: none;">
+            <!-- 数据概览 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 数据概览</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="metricsRow">
+                        <!-- 动态生成数据卡片 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 完美方案展示区域 -->
+            <div class="card" id="perfectSchemesCard" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🏆 完美录取方案</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <i class="fas fa-trophy"></i>
+                        <strong>完美方案：</strong>滑档数和未满足承诺专业数都为0的理想录取方案
+                    </div>
+                    <div id="perfectSchemesList">
+                        <!-- 动态生成完美方案列表 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 基础方案数据 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📋 基础方案数据</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table" id="baseSchemeTable">
+                            <thead>
+                                <tr>
+                                    <th>📋 方案类型</th>
+                                    <th>❌ 未满足数</th>
+                                    <th>📉 滑档数</th>
+                                    <th>✅ 录取人数</th>
+                                    <th>🆓 空余名额</th>
+                                    <th>📊 名额分配</th>
+                                    <th>⚙️ 操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 动态生成基础方案 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三层结构说明 -->
+            <div class="card" id="structureExplanation" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0">🏗️ 三层结构说明</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6>📋 数据结构说明：</h6>
+                        <ol>
+                            <li><strong>基础方案</strong>：原始计划下的所有可能录取方案</li>
+                            <li><strong>调整方案</strong>：基于有空余名额的基础方案生成的名额调整方案</li>
+                            <li><strong>录取方案</strong>：每个调整方案下的具体录取结果</li>
+                        </ol>
+                        <p class="mb-0">点击基础方案的"查看调整方案"按钮可展开该方案的所有调整方案。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 方案详情模态框 -->
+            <div class="modal fade" id="schemeDetailModal" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="schemeDetailTitle">方案详情</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="schemeDetailBody">
+                            <!-- 动态内容 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 全局变量
+        let analysisData = null;
+
+        // 显示功能开发中提示
+        function showComingSoon(featureName) {
+            let features = [];
+            
+            if (featureName === 'Love Yourself') {
+                features = [
+                    '• 身心健康监测和提醒',
+                    '• 工作压力评估和缓解建议',
+                    '• 时间管理和任务规划工具',
+                    '• 健康作息时间表制定',
+                    '• 心理健康自测和调节',
+                    '• 团队关怀和互动功能',
+                    '• 工作生活平衡指导'
+                ];
+            } else {
+                features = ['• 敬请期待更多功能'];
+            }
+            
+            const message = `${featureName}功能正在开发中，敬请期待！\n\n预期功能包括：\n${features.join('\n')}`;
+            alert(message);
+        }
+
+        // 默认配置
+        const defaultConfigs = {
+            liberal_arts: {
+                excel_file: "工作簿2.xlsx",
+                majors: {
+                    "汉语言文学": 1,
+                    "德语(德语法学实验班)": 1,
+                    "经济管理试验班(数智经济与管理)": 4,
+                    "社会科学试验班": 5,
+                    "人文科学试验班": 2,
+                    "英语": 3
+                }
+            },
+            science: {
+                excel_file: "工作簿2.xlsx",
+                majors: {
+                    "人工智能": 2,
+                    "理科试验班（匡亚明学院大理科班）": 1,
+                    "计算机科学与技术": 3,
+                    "计算机科学与技术（计算机金融实验班）": 1,
+                    "电子信息类": 3,
+                    "软件工程": 3,
+                    "软件工程（软工商业创新班）": 2,
+                    "技术科学试验班": 11,
+                    "理科试验班类（数理科学类）": 4,
+                    "工科试验班": 2,
+                    "理科试验班类（化学与生命科学类）": 2,
+                    "临床医学（卓越医师班）（八年本博连读）": 1,
+                    "口腔医学": 1,
+                    "环境科学与工程类（环境与健康实验班）": 2,
+                    "理科试验班类（地球科学与资源环境类）": 1
+                }
+            }
+        };
+
+        // 测试模态框功能
+        function testModal() {
+            try {
+                console.log('测试模态框开始');
+                
+                const modalElement = document.getElementById('schemeDetailModal');
+                const titleElement = document.getElementById('schemeDetailTitle');
+                const bodyElement = document.getElementById('schemeDetailBody');
+                
+                if (!modalElement || !titleElement || !bodyElement) {
+                    alert('模态框元素缺失！请检查页面结构');
+                    return;
+                }
+                
+                titleElement.textContent = '🧪 模态框测试';
+                bodyElement.innerHTML = `
+                    <div class="alert alert-success">
+                        <h6>✅ 模态框测试成功！</h6>
+                        <p>如果您能看到这个消息，说明模态框功能正常。</p>
+                        <ul>
+                            <li>Bootstrap版本: 5.3.2</li>
+                            <li>模态框元素: 正常</li>
+                            <li>JavaScript: 正常</li>
+                        </ul>
+                    </div>
+                `;
+                
+                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                modal.show();
+                console.log('测试模态框显示完成');
+                
+            } catch (error) {
+                console.error('测试模态框失败:', error);
+                alert(`模态框测试失败: ${error.message}`);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            updateMajorInputs(); // 初始化专业输入框
+        });
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            document.getElementById('analysisForm').addEventListener('submit', runAnalysis);
+        }
+
+        // 根据科类更新专业输入框
+        function updateMajorInputs() {
+            const subjectType = document.getElementById('subjectType').value;
+            const container = document.getElementById('majorInputsContainer');
+            const config = defaultConfigs[subjectType];
+            
+            container.innerHTML = '';
+            
+            // 创建网格容器，根据科类设置不同的CSS类
+            const gridDiv = document.createElement('div');
+            gridDiv.className = `major-input-grid ${subjectType}`;
+            
+            const majors = Object.keys(config.majors);
+            majors.forEach((major, index) => {
+                const majorDiv = document.createElement('div');
+                majorDiv.className = 'major-input-item';
+                majorDiv.innerHTML = `
+                    <label class="form-label d-block">${major}</label>
+                    <input type="number" class="form-control" id="major_${index}" 
+                           value="${config.majors[major]}" min="0" max="50">
+                    <div class="form-text mt-1">招生名额</div>
+                `;
+                gridDiv.appendChild(majorDiv);
+            });
+            
+            container.appendChild(gridDiv);
+            
+            // 更新Excel文件路径
+            document.getElementById('excelFile').value = config.excel_file;
+        }
+
+        // 恢复默认配置
+        function resetToDefaults() {
+            updateMajorInputs();
+        }
+
+        // 处理文件选择
+        function handleFileSelect() {
+            const fileInput = document.getElementById('excelFile');
+            const fileStatus = document.getElementById('fileStatus');
+            
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileStatus.textContent = `已选择: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                fileStatus.className = 'text-success mt-1';
+            } else {
+                fileStatus.textContent = '';
+            }
+        }
+
+        // 收集表单配置数据
+        function collectFormConfig() {
+            const subjectType = document.getElementById('subjectType').value;
+            const fileInput = document.getElementById('excelFile');
+            const config = defaultConfigs[subjectType];
+            const admissionPlan = {};
+            
+            // 检查是否选择了文件
+            if (!fileInput.files || fileInput.files.length === 0) {
+                throw new Error('请选择考生信息Excel文件');
+            }
+            
+            const majors = Object.keys(config.majors);
+            majors.forEach((major, index) => {
+                const value = parseInt(document.getElementById(`major_${index}`).value) || 0;
+                admissionPlan[major] = value;
+            });
+            
+            return {
+                subject_type: subjectType,
+                excel_file: fileInput.files[0], // 返回文件对象而不是路径
+                admission_plan: admissionPlan
+            };
+        }
+
+        // 生成数据
+        async function runAnalysis(event) {
+            event.preventDefault();
+            
+            // 显示加载状态
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('analyzeSpinner').classList.remove('d-none');
+            
+            try {
+                // 收集表单配置数据
+                const config = collectFormConfig();
+                
+                console.log('发送的配置数据:', config);
+                
+                // 使用FormData来发送文件
+                const formData = new FormData();
+                formData.append('excel_file', config.excel_file);
+                formData.append('subject_type', config.subject_type);
+                
+                // 按照后端期望的格式添加专业数据
+                let majorIndex = 0;
+                Object.entries(config.admission_plan).forEach(([majorName, quota]) => {
+                    formData.append(`major_${majorIndex}`, quota);
+                    formData.append(`major_name_${majorIndex}`, majorName);
+                    majorIndex++;
+                });
+                
+                // 发送分析请求
+                const response = await fetch('/api/run_analysis', {
+                    method: 'POST',
+                    body: formData  // 不设置Content-Type，让浏览器自动设置multipart/form-data
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 0) {
+                    analysisData = result.data;
+                    displayResults(analysisData);
+                } else {
+                    alert('数据生成失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('数据生成错误:', error);
+                alert('数据生成过程中发生错误: ' + error.message);
+            } finally {
+                // 隐藏加载状态
+                document.getElementById('loadingDiv').style.display = 'none';
+                document.getElementById('analyzeSpinner').classList.add('d-none');
+            }
+        }
+
+        // 显示完美方案
+        function displayPerfectSchemes(data) {
+            const perfectSchemesCard = document.getElementById('perfectSchemesCard');
+            const perfectSchemesList = document.getElementById('perfectSchemesList');
+            
+            let perfectSchemes = [];
+            let perfectAdjustmentGroups = new Map(); // 用于按调整方案分组
+            
+            // 筛选基础方案中的完美方案
+            if (data.original_base_schemes) {
+                data.original_base_schemes.forEach((scheme, index) => {
+                    if (scheme.slide_count === 0 && scheme.unsatisfied_count === 0) {
+                        perfectSchemes.push({
+                            type: 'base',
+                            scheme: scheme,
+                            index: index,
+                            title: `原始方案${scheme.scheme_id}`
+                        });
+                    }
+                });
+            }
+            
+            // 筛选调整方案中的完美方案，并按调整方案分组
+            if (data.base_schemes_with_adjustments) {
+                data.base_schemes_with_adjustments.forEach(baseSchemeData => {
+                    if (baseSchemeData.adjustment_plans) {
+                        baseSchemeData.adjustment_plans.forEach((adjustmentPlan, adjIndex) => {
+                            if (adjustmentPlan.base_schemes && adjustmentPlan.base_schemes.length > 0) {
+                                // 找出该调整方案中的所有完美方案
+                                const perfectSchemesInPlan = adjustmentPlan.base_schemes.filter(scheme => 
+                                    scheme.unsatisfied_count === 0 && scheme.slide_count === 0
+                                );
+                                
+                                if (perfectSchemesInPlan.length > 0) {
+                                    // 生成调整方案的唯一标识（仅基于名额变化，不考虑基础方案）
+                                    const planChangesStr = JSON.stringify(adjustmentPlan.plan_changes);
+                                    const groupKey = planChangesStr; // 只按调整方式分组
+                                    
+                                    if (!perfectAdjustmentGroups.has(groupKey)) {
+                                        perfectAdjustmentGroups.set(groupKey, {
+                                            planChanges: adjustmentPlan.plan_changes,
+                                            adjustedPlan: adjustmentPlan.adjusted_plan,
+                                            schemes: [],
+                                            baseSchemes: new Set() // 记录涉及的基础方案
+                                        });
+                                    }
+                                    
+                                    const group = perfectAdjustmentGroups.get(groupKey);
+                                    group.baseSchemes.add(baseSchemeData.base_scheme_index);
+                                    
+                                    perfectSchemesInPlan.forEach((scheme, schemeIndex) => {
+                                        group.schemes.push({
+                                            scheme: scheme,
+                                            adjIndex: adjIndex,
+                                            schemeIndex: schemeIndex,
+                                            baseSchemeIndex: baseSchemeData.base_scheme_index,
+                                            planName: adjustmentPlan.plan_name
+                                        });
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            
+            const totalPerfectCount = perfectSchemes.length + Array.from(perfectAdjustmentGroups.values())
+                .reduce((sum, group) => sum + group.schemes.length, 0);
+            
+            // 如果有完美方案，显示它们
+            if (totalPerfectCount > 0) {
+                perfectSchemesCard.style.display = 'block';
+                let perfectSchemesHtml = `
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="mb-3"><strong>发现 ${totalPerfectCount} 个完美录取方案：</strong></p>
+                        </div>
+                    </div>
+                `;
+                
+                // 显示原始完美方案
+                if (perfectSchemes.length > 0) {
+                    perfectSchemesHtml += `
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="perfect-section-title"><i class="fas fa-star"></i> 原始计划完美方案</h6>
+                            </div>
+                    `;
+                    
+                    perfectSchemes.forEach((perfectScheme) => {
+                        const scheme = perfectScheme.scheme;
+                        const totalAdmitted = scheme.total_admitted || 0;
+                        const totalQuota = scheme.total_quota || 0;
+                        const transferCount = scheme.transfer_count || 0;
+                        
+                        perfectSchemesHtml += `
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card border-success">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-trophy text-warning"></i>
+                                            ${perfectScheme.title}
+                                        </h6>
+                                        <div class="card-text">
+                                            <small class="text-muted">
+                                                📊 录取: ${totalAdmitted}/${totalQuota} 
+                                                🔄 调剂: ${transferCount}人<br>
+                                                ✅ 未满足: 0人 📉 滑档: 0人
+                                            </small>
+                                        </div>
+                                        <div class="mt-2">
+                                            <button class="btn btn-outline-success btn-sm" onclick="showOriginalSchemeDetail(${perfectScheme.index})">查看详情</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    perfectSchemesHtml += `</div>`;
+                }
+                
+                // 显示调整方案完美方案（按组展示）
+                if (perfectAdjustmentGroups.size > 0) {
+                    perfectSchemesHtml += `
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="perfect-section-title"><i class="fas fa-cogs"></i> 调整方案完美方案</h6>
+                            </div>
+                        </div>
+                    `;
+                    
+                    Array.from(perfectAdjustmentGroups.values()).forEach((group, groupIndex) => {
+                        const changesText = Object.entries(group.planChanges)
+                            .filter(([major, change]) => change !== 0)
+                            .map(([major, change]) => `${major}${change > 0 ? '+' : ''}${change}`)
+                            .join(', ');
+                        
+                        // 生成基础方案列表描述
+                        const baseSchemesList = Array.from(group.baseSchemes).sort((a, b) => a - b);
+                        const baseSchemesText = baseSchemesList.length === 1 
+                            ? `基于方案${baseSchemesList[0]}`
+                            : `基于方案${baseSchemesList.join('、')}`;
+                        
+                        perfectSchemesHtml += `
+                            <div class="col-12 mb-4">
+                                <div class="card border-primary perfect-scheme-group">
+                                    <div class="card-header perfect-group-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                <i class="fas fa-layer-group text-primary"></i>
+                                                调整方案: ${changesText}
+                                                <span class="badge bg-success ms-2">${group.schemes.length}个录取方案</span>
+                                            </h6>
+                                            <span class="perfect-group-changes">${baseSchemesText}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="perfect-toggle-info d-flex justify-content-between align-items-center mb-3">
+                                            <span class="text-muted">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                该调整方案下共有 <strong>${group.schemes.length}</strong> 个完美录取方案
+                                            </span>
+                                            <button class="btn btn-outline-primary btn-sm perfect-toggle-btn" onclick="togglePerfectSchemes(${groupIndex})" id="perfect-toggle-${groupIndex}">
+                                                <i class="fas fa-chevron-down me-1"></i>
+                                                展开查看方案
+                                            </button>
+                                        </div>
+                                        <div class="perfect-schemes-container collapsed" id="perfect-schemes-${groupIndex}">
+                                            <div class="row">
+                        `;
+                        
+                        group.schemes.forEach((schemeData, schemeIndex) => {
+                            const scheme = schemeData.scheme;
+                            const totalAdmitted = scheme.total_admitted || 0;
+                            const totalQuota = scheme.total_quota || 0;
+                            const transferCount = scheme.transfer_count || 0;
+                            
+                            perfectSchemesHtml += `
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card border-success h-100 nested-perfect-scheme">
+                                        <div class="card-body">
+                                            <h6 class="card-title">
+                                                <i class="fas fa-trophy text-warning"></i>
+                                                录取方案${scheme.scheme_id}
+                                                ${schemeIndex === 0 ? '<span class="badge bg-primary ms-1">最佳</span>' : ''}
+                                            </h6>
+                                            <div class="card-text">
+                                                <small class="text-muted">
+                                                    📊 录取: ${totalAdmitted}/${totalQuota}<br>
+                                                    🔄 调剂: ${transferCount}人<br>
+                                                    ✅ 未满足: 0人 📉 滑档: 0人<br>
+                                                    📋 来源: 方案${schemeData.baseSchemeIndex} - ${schemeData.planName}
+                                                </small>
+                                            </div>
+                                            <div class="mt-2">
+                                                <button class="btn btn-outline-success btn-sm" onclick="showRecordingSchemeDetail(${schemeData.baseSchemeIndex}, ${schemeData.adjIndex}, ${schemeData.schemeIndex})">查看详情</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        perfectSchemesHtml += `
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                perfectSchemesList.innerHTML = perfectSchemesHtml;
+                perfectSchemesCard.style.display = 'block';
+            } else {
+                perfectSchemesCard.style.display = 'none';
+            }
+        }
+
+        // 显示数据结果
+        function displayResults(data) {
+            displayMetrics(data);
+            displayPerfectSchemes(data);
+            displayBaseSchemeTable(data);
+            
+            // 如果有调整方案，显示结构说明
+            if (data.total_adjustment_plans > 0) {
+                document.getElementById('structureExplanation').style.display = 'block';
+            }
+            
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        // 显示数据概览
+        function displayMetrics(data) {
+            const metricsRow = document.getElementById('metricsRow');
+            const subjectTypeName = data.subject_type === 'liberal_arts' ? '文科' : '理科';
+            
+            // 检查是否学生数超过了计划数
+            const isStudentCountLimited = data.original_total_students && data.original_total_students > data.total_students;
+            const studentCountLabel = isStudentCountLimited 
+                ? `👥 模拟学生数 (前${data.total_students}/${data.original_total_students})`
+                : '👥 学生数';
+            
+            const metrics = [
+                { label: '📚 科类', value: subjectTypeName },
+                { label: studentCountLabel, value: data.total_students },
+                { label: '🎯 名额数', value: data.total_quota },
+                { label: '📋 调整方案数', value: data.total_adjustment_plans || 0 },
+                { label: '✅ 有空余方案', value: data.schemes_with_vacancy_count || 0 },
+                { label: '⭕ 无空余方案', value: data.schemes_without_vacancy_count || 0 }
+            ];
+
+            // 根据指标数量调整列宽
+            const colClass = metrics.length <= 4 ? 'col-md-3' : 'col-md-2';
+            
+            let metricsHtml = metrics.map(metric => `
+                <div class="${colClass}">
+                    <div class="metric-card">
+                        <div class="metric-value">${metric.value}</div>
+                        <div class="metric-label">${metric.label}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 如果学生数被限制，添加说明
+            if (isStudentCountLimited) {
+                metricsHtml += `
+                    <div class="col-12 mt-3">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>注意：</strong>由于计划总数(${data.total_quota})小于学生总数(${data.original_total_students})，
+                            模拟时只考虑了前${data.total_students}名学生。
+                        </div>
+                    </div>
+                `;
+            }
+            
+            metricsRow.innerHTML = metricsHtml;
+        }
+
+        // 显示基础方案表格
+        function displayBaseSchemeTable(data) {
+            const tbody = document.querySelector('#baseSchemeTable tbody');
+            tbody.innerHTML = '';
+
+            // 显示原始计划的基础方案
+            data.original_base_schemes.forEach((baseResult, index) => {
+                const row = document.createElement('tr');
+                
+                // 计算名额分配简要信息
+                const allocations = [];
+                Object.entries(data.original_plan).forEach(([major, quota]) => {
+                    const admitted = baseResult.major_results[major]?.admitted_count || 0;
+                    allocations.push(`${major}:${admitted}/${quota}`);
+                });
+
+                // 确定方案描述
+                let schemeDescription = `原始方案 ${baseResult.scheme_id}`;
+                if (baseResult.transfer_count > 0) {
+                    schemeDescription += ` (含${baseResult.transfer_count}调剂)`;
+                }
+
+                // 空余名额显示
+                const vacancyDisplay = baseResult.has_vacancy 
+                    ? `<span class="text-success">有 (${baseResult.total_vacancy}个)</span>`
+                    : `<span class="text-muted">无</span>`;
+
+                // 检查是否有对应的调整方案
+                const hasAdjustments = data.base_schemes_with_adjustments && 
+                    data.base_schemes_with_adjustments.some(adj => adj.base_scheme_index === index + 1);
+                
+                let actionButtons = `<button class="btn btn-sm btn-outline-primary" onclick="showOriginalSchemeDetail(${index})">详情</button>`;
+                
+                if (hasAdjustments) {
+                    const adjustmentCount = data.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === index + 1)?.adjustment_plans?.length || 0;
+                    actionButtons += `
+                        <button class="btn btn-sm btn-outline-success ms-1" onclick="toggleAdjustmentPlans(${index + 1})">
+                            <span id="adjustment-toggle-${index + 1}">查看调整方案 (${adjustmentCount})</span>
+                        </button>
+                    `;
+                }
+
+                row.innerHTML = `
+                    <td><strong>${schemeDescription}</strong></td>
+                    <td>${baseResult.unsatisfied_count}</td>
+                    <td>${baseResult.slide_count}</td>
+                    <td>${baseResult.total_admitted}</td>
+                    <td>${vacancyDisplay}</td>
+                    <td><small>${allocations.join('; ')}</small></td>
+                    <td>${actionButtons}</td>
+                `;
+                tbody.appendChild(row);
+                
+                // 如果有调整方案，创建隐藏的调整方案行
+                if (hasAdjustments) {
+                    const adjustmentRow = document.createElement('tr');
+                    adjustmentRow.id = `adjustment-plans-${index + 1}`;
+                    adjustmentRow.style.display = 'none';
+                    adjustmentRow.innerHTML = `
+                        <td colspan="7">
+                            <div class="p-3" style="background: rgba(0,0,0,0.02);">
+                                <h6>📋 基于方案${index + 1}的调整方案:</h6>
+                                <div id="adjustment-plans-content-${index + 1}">
+                                    <!-- 动态内容 -->
+                                </div>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(adjustmentRow);
+                }
+            });
+        }
+
+        // 切换调整方案的显示/隐藏（基于基础方案）
+        function toggleAdjustmentPlans(baseSchemeIndex) {
+            try {
+                const adjustmentRow = document.getElementById(`adjustment-plans-${baseSchemeIndex}`);
+                const toggleBtn = document.getElementById(`adjustment-toggle-${baseSchemeIndex}`);
+                const contentDiv = document.getElementById(`adjustment-plans-content-${baseSchemeIndex}`);
+                
+                if (!adjustmentRow || !toggleBtn || !contentDiv) {
+                    console.error('找不到DOM元素:', { adjustmentRow, toggleBtn, contentDiv });
+                    return;
+                }
+                
+                if (!analysisData || !analysisData.base_schemes_with_adjustments) {
+                    console.error('分析数据不存在或不完整:', analysisData);
+                    return;
+                }
+                
+                if (adjustmentRow.style.display === 'none') {
+                    // 显示调整方案
+                    const baseSchemeData = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex);
+                
+                if (baseSchemeData && baseSchemeData.adjustment_plans.length > 0) {
+                    let contentHtml = `
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>🏆 排名</th>
+                                        <th>🆔 方案名称</th>
+                                        <th>❌ 未满足数</th>
+                                        <th>📉 滑档数</th>
+                                        <th>✅ 录取人数</th>
+                                        <th>🔄 名额调整</th>
+                                        <th>⚙️ 操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    baseSchemeData.adjustment_plans.forEach((adjustmentPlan, index) => {
+                        const bestScheme = adjustmentPlan.base_schemes[0];
+                        
+                        // 计算名额调整信息
+                        const changes = [];
+                        Object.entries(adjustmentPlan.plan_changes || {}).forEach(([major, change]) => {
+                            if (change !== 0 && change !== undefined) { // 修复undefined问题
+                                changes.push(`${major}${change > 0 ? '+' : ''}${change}`);
+                            }
+                        });
+                        
+                        contentHtml += `
+                            <tr>
+                                <td><strong>${index + 1}</strong></td>
+                                <td>${adjustmentPlan.plan_name}</td>
+                                <td>${bestScheme.unsatisfied_count}</td>
+                                <td>${bestScheme.slide_count}</td>
+                                <td>${bestScheme.total_admitted}</td>
+                                <td><small>${changes.length > 0 ? changes.join('; ') : '无调整'}</small></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success" onclick="showAdjustmentPlanDetail(${baseSchemeIndex}, ${index})">详情</button>
+                                    <button class="btn btn-sm btn-outline-info ms-1" onclick="toggleRecordingSchemes(${baseSchemeIndex}, ${index})">
+                                        <span id="recording-toggle-${baseSchemeIndex}-${index}">展开录取方案 (${adjustmentPlan.scheme_count})</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr id="recording-schemes-${baseSchemeIndex}-${index}" style="display: none;">
+                                <td colspan="7">
+                                    <div class="p-2" style="background: rgba(0,0,0,0.02);">
+                                        <h6>📋 录取方案详情 (${adjustmentPlan.scheme_count}个):</h6>
+                                        <div id="recording-schemes-content-${baseSchemeIndex}-${index}">
+                                            <!-- 动态内容 -->
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    contentHtml += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    contentDiv.innerHTML = contentHtml;
+                }
+                
+                adjustmentRow.style.display = '';
+                toggleBtn.textContent = '收起调整方案';
+            } else {
+                // 隐藏调整方案
+                adjustmentRow.style.display = 'none';
+                const adjustmentCount = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex)?.adjustment_plans?.length || 0;
+                toggleBtn.textContent = `查看调整方案 (${adjustmentCount})`;
+            }
+            } catch (error) {
+                console.error('切换调整方案时发生错误:', error);
+                alert('操作失败，请检查浏览器控制台获取详细信息');
+            }
+        }
+
+        // 显示原始方案详情模态框
+        function showOriginalSchemeDetail(schemeIndex) {
+            try {
+                console.log('开始显示方案详情，schemeIndex:', schemeIndex);
+                console.log('analysisData:', analysisData);
+                
+                if (!analysisData || !analysisData.original_base_schemes) {
+                    console.error('分析数据不存在:', analysisData);
+                    alert('数据尚未加载，请先生成数据');
+                    return;
+                }
+                
+                const baseResult = analysisData.original_base_schemes[schemeIndex];
+                if (!baseResult) {
+                    console.error('找不到指定的方案:', schemeIndex);
+                    alert(`找不到方案${schemeIndex + 1}的数据`);
+                    return;
+                }
+
+                console.log('找到方案数据:', baseResult);
+
+                // 获取模态框元素
+                const modalElement = document.getElementById('schemeDetailModal');
+                const titleElement = document.getElementById('schemeDetailTitle');
+                const bodyElement = document.getElementById('schemeDetailBody');
+                
+                if (!modalElement || !titleElement || !bodyElement) {
+                    console.error('找不到模态框元素');
+                    alert('页面模态框元素缺失，请刷新页面');
+                    return;
+                }
+
+                // 设置标题
+                titleElement.textContent = `原始方案${baseResult.scheme_id} 详情`;
+                
+                // 生成详情内容
+                let detailHtml = '';
+                try {
+                    detailHtml = generateDetailContent(
+                        analysisData.original_plan,
+                        baseResult.major_results,
+                        baseResult.unsatisfied_students,
+                        baseResult.slide_students,
+                        baseResult.transfer_students
+                    );
+                } catch (contentError) {
+                    console.error('生成详情内容时出错:', contentError);
+                    detailHtml = `<div class="alert alert-danger">
+                        <h6>数据加载出错</h6>
+                        <p>错误信息: ${contentError.message}</p>
+                        <p>请检查数据完整性或联系开发者</p>
+                    </div>`;
+                }
+
+                // 设置内容
+                bodyElement.innerHTML = detailHtml;
+                
+                // 创建并显示模态框
+                let modal;
+                try {
+                    modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                    console.log('模态框实例创建成功');
+                } catch (modalError) {
+                    console.error('创建模态框实例失败:', modalError);
+                    alert('模态框初始化失败，请刷新页面重试');
+                    return;
+                }
+                
+                // 添加事件监听器
+                modalElement.addEventListener('hidden.bs.modal', function () {
+                    console.log('模态框已关闭');
+                }, { once: true });
+                
+                // 显示模态框
+                modal.show();
+                console.log('模态框显示命令已执行');
+                
+            } catch (error) {
+                console.error('显示原始方案详情时发生错误:', error);
+                alert(`显示详情失败: ${error.message}\n请检查浏览器控制台获取详细信息`);
+            }
+        }
+
+        // 显示调整方案详情模态框
+        function showAdjustmentPlanDetail(baseSchemeIndex, adjustmentIndex) {
+            try {
+                console.log('显示调整方案详情:', baseSchemeIndex, adjustmentIndex);
+                
+                const baseSchemeData = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex);
+                if (!baseSchemeData || !baseSchemeData.adjustment_plans[adjustmentIndex]) {
+                    console.error('找不到调整方案数据');
+                    alert('找不到指定的调整方案数据');
+                    return;
+                }
+
+                const adjustmentPlan = baseSchemeData.adjustment_plans[adjustmentIndex];
+                
+                // 获取模态框元素并使用统一的创建方式
+                const modalElement = document.getElementById('schemeDetailModal');
+                if (!modalElement) {
+                    console.error('找不到模态框元素');
+                    alert('页面模态框元素缺失，请刷新页面');
+                    return;
+                }
+                
+                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                document.getElementById('schemeDetailTitle').textContent = `基于方案${baseSchemeIndex} - ${adjustmentPlan.plan_name} 详情`;
+
+            // 显示最佳录取方案
+            const bestScheme = adjustmentPlan.base_schemes[0];
+
+            let detailHtml = `
+                <h6>📊 名额调整情况:</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>🎓 专业</th>
+                                <th>📝 原始名额</th>
+                                <th>✨ 调整后名额</th>
+                                <th>📈 变化</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            Object.entries(analysisData.original_plan).forEach(([major, originalQuota]) => {
+                const adjustedQuota = adjustmentPlan.adjusted_plan[major];
+                const change = adjustmentPlan.plan_changes[major] || 0; // 修复undefined问题
+                const changeClass = change > 0 ? 'text-success' : change < 0 ? 'text-danger' : '';
+                const changeText = change === 0 ? '无变化' : `${change > 0 ? '+' : ''}${change}`;
+                
+                detailHtml += `
+                    <tr>
+                        <td><strong>${major}</strong></td>
+                        <td>${originalQuota}个</td>
+                        <td>${adjustedQuota}个</td>
+                        <td class="${changeClass}"><strong>${changeText}</strong></td>
+                    </tr>
+                `;
+            });
+
+            detailHtml += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h6>📋 最佳录取方案 (方案${bestScheme.scheme_id}):</h6>
+            `;
+
+            detailHtml += generateDetailContent(
+                adjustmentPlan.adjusted_plan,
+                bestScheme.major_results,
+                bestScheme.unsatisfied_students,
+                bestScheme.slide_students,
+                bestScheme.transfer_students
+            );
+
+                if (adjustmentPlan.base_schemes.length > 1) {
+                    detailHtml += `
+                        <div class="mt-4">
+                            <p><strong>注意:</strong> 该调整方案共有 ${adjustmentPlan.base_schemes.length} 个录取方案，这里显示的是效果最佳的方案。</p>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('schemeDetailBody').innerHTML = detailHtml;
+                modal.show();
+                
+            } catch (error) {
+                console.error('显示调整方案详情时发生错误:', error);
+                alert(`显示详情失败: ${error.message}\n请检查浏览器控制台获取详细信息`);
+            }
+        }
+
+        // 切换录取方案的显示/隐藏
+        function toggleRecordingSchemes(baseSchemeIndex, adjustmentIndex) {
+            const detailRow = document.getElementById(`recording-schemes-${baseSchemeIndex}-${adjustmentIndex}`);
+            const toggleBtn = document.getElementById(`recording-toggle-${baseSchemeIndex}-${adjustmentIndex}`);
+            const contentDiv = document.getElementById(`recording-schemes-content-${baseSchemeIndex}-${adjustmentIndex}`);
+            
+            if (detailRow.style.display === 'none') {
+                // 显示录取方案
+                const baseSchemeData = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex);
+                const adjustmentPlan = baseSchemeData.adjustment_plans[adjustmentIndex];
+                
+                let contentHtml = '';
+                adjustmentPlan.base_schemes.forEach((scheme, index) => {
+                    const effectScore = scheme.unsatisfied_count + scheme.slide_count;
+                    
+                    contentHtml += `
+                        <div class="card mb-2" style="border-left: 4px solid ${index === 0 ? '#28a745' : '#6c757d'};">
+                            <div class="card-body py-2">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3">
+                                        <strong>录取方案 ${scheme.scheme_id}</strong>
+                                        ${index === 0 ? '<span class="badge bg-success ms-2">最佳</span>' : ''}
+                                    </div>
+                                    <div class="col-md-2">
+                                        <small>未满足: ${scheme.unsatisfied_count}</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <small>滑档: ${scheme.slide_count}</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <small>调剂: ${scheme.transfer_count}</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="showRecordingSchemeDetail(${baseSchemeIndex}, ${adjustmentIndex}, ${index})">查看详情</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                contentDiv.innerHTML = contentHtml;
+                detailRow.style.display = '';
+                toggleBtn.textContent = '收起录取方案';
+            } else {
+                // 隐藏录取方案
+                detailRow.style.display = 'none';
+                const baseSchemeData = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex);
+                toggleBtn.textContent = `展开录取方案 (${baseSchemeData.adjustment_plans[adjustmentIndex].scheme_count})`;
+            }
+        }
+
+        // 显示具体录取方案详情
+        function showRecordingSchemeDetail(baseSchemeIndex, adjustmentIndex, schemeIndex) {
+            try {
+                console.log('显示录取方案详情:', baseSchemeIndex, adjustmentIndex, schemeIndex);
+                
+                const baseSchemeData = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex);
+                const adjustmentPlan = baseSchemeData.adjustment_plans[adjustmentIndex];
+                const scheme = adjustmentPlan.base_schemes[schemeIndex];
+                
+                if (!scheme) {
+                    console.error('找不到录取方案数据');
+                    alert('找不到指定的录取方案数据');
+                    return;
+                }
+
+                // 获取模态框元素并使用统一的创建方式
+                const modalElement = document.getElementById('schemeDetailModal');
+                if (!modalElement) {
+                    console.error('找不到模态框元素');
+                    alert('页面模态框元素缺失，请刷新页面');
+                    return;
+                }
+                
+                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                document.getElementById('schemeDetailTitle').textContent = `基于方案${baseSchemeIndex} - ${adjustmentPlan.plan_name} - 录取方案${scheme.scheme_id} 详情`;
+
+                let detailHtml = generateDetailContent(
+                    adjustmentPlan.adjusted_plan,
+                    scheme.major_results,
+                    scheme.unsatisfied_students,
+                    scheme.slide_students,
+                    scheme.transfer_students
+                );
+
+                document.getElementById('schemeDetailBody').innerHTML = detailHtml;
+                modal.show();
+                
+            } catch (error) {
+                console.error('显示录取方案详情时发生错误:', error);
+                alert(`显示详情失败: ${error.message}\n请检查浏览器控制台获取详细信息`);
+            }
+        }
+
+
+
+        // 生成详情内容的公共函数
+        function generateDetailContent(plan, majorResults, unsatisfiedStudents, slideStudents, transferStudents = []) {
+            try {
+                console.log('生成详情内容，参数:', { plan, majorResults, unsatisfiedStudents, slideStudents, transferStudents });
+                
+                if (!plan) {
+                    throw new Error('招生计划数据为空');
+                }
+                
+                if (!majorResults) {
+                    throw new Error('专业录取结果数据为空');
+                }
+                
+                let detailHtml = `
+                    <h6>📋 专业录取情况:</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>🎓 专业</th>
+                                    <th>📊 名额</th>
+                                    <th>👥 录取学生</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                try {
+                    Object.entries(plan).forEach(([major, quota]) => {
+                        const students = majorResults[major]?.students || [];
+                        
+                        detailHtml += `
+                            <tr>
+                                <td><strong>${major || '未知专业'}</strong></td>
+                                <td>${quota || 0}个</td>
+                                <td>
+                        `;
+                        
+                        if (students && students.length > 0) {
+                            students.forEach((student, index) => {
+                                const name = student?.name || '未知姓名';
+                                const rank = student?.rank || 'N/A';
+                                const score = student?.score || 'N/A';
+                                detailHtml += `${index + 1}. ${name} (排名${rank}, 总分${score})<br>`;
+                            });
+                        } else {
+                            detailHtml += `<span class="text-muted">无人录取</span>`;
+                        }
+                        
+                        detailHtml += `
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } catch (planError) {
+                    console.error('处理专业录取情况时出错:', planError);
+                    detailHtml += `
+                        <tr>
+                            <td colspan="3" class="text-danger">专业录取数据处理出错: ${planError.message}</td>
+                        </tr>
+                    `;
+                }
+
+                detailHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                // 处理未满足学生
+                try {
+                    if (unsatisfiedStudents && Array.isArray(unsatisfiedStudents) && unsatisfiedStudents.length > 0) {
+                        detailHtml += `
+                            <h6>⚠️ 未满足承诺专业学生 (${unsatisfiedStudents.length}人):</h6>
+                            <div class="mb-4">
+                        `;
+                        unsatisfiedStudents.forEach((student, index) => {
+                            const name = student?.name || '未知姓名';
+                            const rank = student?.rank || 'N/A';
+                            const score = student?.score || 'N/A';
+                            detailHtml += `${index + 1}. ${name} (排名${rank}, 总分${score})<br>`;
+                        });
+                        detailHtml += `</div>`;
+                    }
+                } catch (unsatisfiedError) {
+                    console.error('处理未满足学生时出错:', unsatisfiedError);
+                    detailHtml += `<div class="alert alert-warning">未满足学生数据处理出错: ${unsatisfiedError.message}</div>`;
+                }
+
+                // 处理滑档学生
+                try {
+                    if (slideStudents && Array.isArray(slideStudents) && slideStudents.length > 0) {
+                        detailHtml += `
+                            <h6>📉 滑档学生 (${slideStudents.length}人):</h6>
+                            <div class="mb-4">
+                        `;
+                        slideStudents.forEach((student, index) => {
+                            const name = student?.name || '未知姓名';
+                            const rank = student?.rank || 'N/A';
+                            const score = student?.score || 'N/A';
+                            const intendedMajorsStr = student?.intended_majors && Array.isArray(student.intended_majors) && student.intended_majors.length > 0 
+                                ? ` → 意向专业: ${student.intended_majors.join(', ')}`
+                                : '';
+                            detailHtml += `${index + 1}. ${name} (排名${rank}, 总分${score})${intendedMajorsStr}<br>`;
+                        });
+                        detailHtml += `</div>`;
+                    }
+                } catch (slideError) {
+                    console.error('处理滑档学生时出错:', slideError);
+                    detailHtml += `<div class="alert alert-warning">滑档学生数据处理出错: ${slideError.message}</div>`;
+                }
+
+                // 处理调剂学生
+                try {
+                    if (transferStudents && Array.isArray(transferStudents) && transferStudents.length > 0) {
+                        detailHtml += `
+                            <h6>🔄 调剂学生 (${transferStudents.length}人):</h6>
+                            <div class="mb-4">
+                        `;
+                        transferStudents.forEach((student, index) => {
+                            const name = student?.name || '未知姓名';
+                            const rank = student?.rank || 'N/A';
+                            const score = student?.score || 'N/A';
+                            const assignedMajor = student?.assigned_major || '未知专业';
+                            const intendedMajorsStr = student?.intended_majors && Array.isArray(student.intended_majors) && student.intended_majors.length > 0 
+                                ? ` → 原志愿: ${student.intended_majors.join(', ')}`
+                                : '';
+                            detailHtml += `${index + 1}. ${name} (排名${rank}, 总分${score}) → 调剂至: <strong>${assignedMajor}</strong>${intendedMajorsStr}<br>`;
+                        });
+                        detailHtml += `</div>`;
+                    }
+                } catch (transferError) {
+                    console.error('处理调剂学生时出错:', transferError);
+                    detailHtml += `<div class="alert alert-warning">调剂学生数据处理出错: ${transferError.message}</div>`;
+                }
+
+                console.log('详情内容生成完成');
+                return detailHtml;
+                
+            } catch (error) {
+                console.error('生成详情内容时发生严重错误:', error);
+                throw new Error(`无法生成详情内容: ${error.message}`);
+            }
+        }
+
+        // 切换完美方案的显示/隐藏
+        function togglePerfectSchemes(groupIndex) {
+            const schemesContainer = document.getElementById(`perfect-schemes-${groupIndex}`);
+            const toggleBtn = document.getElementById(`perfect-toggle-${groupIndex}`);
+            
+            if (schemesContainer.classList.contains('collapsed')) {
+                // 展开
+                schemesContainer.classList.remove('collapsed');
+                schemesContainer.classList.add('expanded');
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-up me-1"></i>收起方案';
+                toggleBtn.classList.remove('btn-outline-primary');
+                toggleBtn.classList.add('btn-outline-secondary');
+            } else {
+                // 收起
+                schemesContainer.classList.remove('expanded');
+                schemesContainer.classList.add('collapsed');
+                toggleBtn.innerHTML = '<i class="fas fa-chevron-down me-1"></i>展开查看方案';
+                toggleBtn.classList.remove('btn-outline-secondary');
+                toggleBtn.classList.add('btn-outline-primary');
+            }
+        }
+    </script>
+</body>
+</html> 
