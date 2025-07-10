@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>考生信息管理 - 南京大学招生助手</title>
+    <title>Search Mode - 考生信息管理 - 南京大学招生助手</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -12,6 +12,11 @@
             --apple-gray: #8E8E93;
             --apple-light-gray: #F2F2F7;
             --apple-dark: #1C1C1E;
+            --apple-green: #34C759;
+            --apple-red: #FF3B30;
+            --apple-orange: #FF9500;
+            --apple-purple: #AF52DE;
+            --apple-teal: #5AC8FA;
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-bg-secondary: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.2);
@@ -127,7 +132,7 @@
         .page-title {
             font-size: 3rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--apple-orange), var(--apple-red));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -156,119 +161,70 @@
             animation: fadeInUp 0.8s ease 0.2s both;
         }
 
-        /* 大按钮容器 */
-        .mode-buttons-container {
-            display: flex;
+        /* Search Mode 特定样式 */
+        .search-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            justify-content: center;
-            align-items: center;
-            min-height: 400px;
-            flex-wrap: wrap;
+            margin-top: 2rem;
         }
 
-        /* 大玻璃按钮样式 */
-        .mode-button {
-            background: var(--glass-bg);
+        .feature-card {
+            background: var(--glass-bg-secondary);
             backdrop-filter: var(--backdrop-blur);
             -webkit-backdrop-filter: var(--backdrop-blur);
-            border: 2px solid var(--glass-border);
-            border-radius: 24px;
-            box-shadow: var(--glass-shadow);
-            padding: 3rem 2rem;
-            width: 300px;
-            height: 280px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .mode-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .mode-button:hover::before {
-            opacity: 1;
-        }
-
-        .mode-button:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 20px 60px rgba(31, 38, 135, 0.6);
-            border-color: var(--apple-blue);
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-
-        .mode-button .icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--apple-blue), var(--apple-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: all 0.3s ease;
-        }
-
-        .mode-button:hover .icon {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 20px rgba(0, 122, 255, 0.5));
-        }
-
-        .mode-button h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .mode-button p {
-            font-size: 1rem;
-            color: var(--text-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
             text-align: center;
-            line-height: 1.5;
-            margin: 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* Phone Mode 按钮特色 */
-        .phone-mode-button:hover {
-            border-color: var(--apple-green);
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
         }
 
-        .phone-mode-button .icon {
-            background: linear-gradient(135deg, var(--apple-green), var(--apple-teal));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .phone-mode-button:hover .icon {
-            filter: drop-shadow(0 0 20px rgba(52, 199, 89, 0.5));
-        }
-
-        /* Search Mode 按钮特色 */
-        .search-mode-button:hover {
-            border-color: var(--apple-orange);
-        }
-
-        .search-mode-button .icon {
+        .feature-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
             background: linear-gradient(135deg, var(--apple-orange), var(--apple-red));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .search-mode-button:hover .icon {
-            filter: drop-shadow(0 0 20px rgba(255, 149, 0, 0.5));
+        .feature-card h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            margin-bottom: 2rem;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            text-decoration: none;
+            transform: translateY(-1px);
         }
 
         /* 页脚 */
@@ -310,6 +266,10 @@
                 text-align: center;
                 margin-top: 1rem;
             }
+            
+            .search-features {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -345,30 +305,77 @@
         <div class="container">
             <!-- 页面标题 -->
             <div class="page-header">
-                <h1 class="page-title">考生信息管理</h1>
-                <p class="page-subtitle">全面的考生信息管理系统，支持数据导入、查询检索、统计分析和档案管理</p>
+                <h1 class="page-title">
+                    <i class="fas fa-search me-3"></i>Search Mode
+                </h1>
+                <p class="page-subtitle">高级搜索查询模式，支持多条件筛选和深度数据分析</p>
             </div>
 
             <!-- 主要内容区域 -->
             <div class="main-content">
-                <div class="mode-buttons-container">
-                    <!-- Phone Mode 按钮 -->
-                    <a href="/phone_mode" class="mode-button phone-mode-button">
-                        <div class="icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h3>Phone Mode</h3>
-                        <p>快速电话联系模式<br>便于电话沟通和信息采集</p>
-                    </a>
+                <!-- 返回按钮 -->
+                <a href="/student_management" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    返回考生信息管理
+                </a>
 
-                    <!-- Search Mode 按钮 -->
-                    <a href="/search_mode" class="mode-button search-mode-button">
+                <!-- 功能介绍 -->
+                <div class="text-center mb-4">
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Search Mode 功能特性</h3>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 800px; margin: 0 auto;">
+                        Search Mode 提供强大的搜索和筛选功能，帮助招生工作人员快速定位目标考生，进行深度数据分析和精准查询。
+                    </p>
+                </div>
+
+                <!-- 功能卡片 -->
+                <div class="search-features">
+                    <div class="feature-card">
                         <div class="icon">
-                            <i class="fas fa-search"></i>
+                            <i class="fas fa-filter"></i>
                         </div>
-                        <h3>Search Mode</h3>
-                        <p>高级搜索查询模式<br>支持多条件筛选和数据分析</p>
-                    </a>
+                        <h4>多条件筛选</h4>
+                        <p>支持按地区、专业、分数、联系状态等多个维度进行组合筛选，精准定位目标考生。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">
+                            <i class="fas fa-search-plus"></i>
+                        </div>
+                        <h4>智能搜索</h4>
+                        <p>支持模糊搜索、关键词匹配、拼音搜索等多种搜索方式，快速找到所需信息。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h4>数据分析</h4>
+                        <p>实时统计搜索结果，生成图表报告，为招生决策提供数据支持。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <h4>批量导出</h4>
+                        <p>支持搜索结果批量导出为Excel、PDF等格式，便于后续处理和存档。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">
+                            <i class="fas fa-bookmark"></i>
+                        </div>
+                        <h4>搜索历史</h4>
+                        <p>保存常用搜索条件和结果，快速重复查询，提高工作效率。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h4>预览模式</h4>
+                        <p>快速预览考生详细信息，支持批量操作和状态更新，无需逐个打开。</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -407,7 +414,7 @@
 
         // 页面加载完成后的初始化
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('考生信息管理页面已加载完成');
+            console.log('Search Mode 页面已加载完成');
         });
     </script>
 </body>

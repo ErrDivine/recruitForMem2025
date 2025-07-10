@@ -52,6 +52,16 @@ def student_management():
     """考生信息管理页面"""
     return render_template("student_management.html")
 
+@app.route("/phone_mode")
+def phone_mode():
+    """Phone Mode - 快速电话联系模式"""
+    return render_template("phone_mode.html")
+
+@app.route("/search_mode")
+def search_mode():
+    """Search Mode - 高级搜索查询模式"""
+    return render_template("search_mode.html")
+
 def _json_response(data: Any, status: int = 200):
     """统一 JSON 包装格式。"""
     return jsonify({"code": 0, "data": data}), status
@@ -462,4 +472,4 @@ def generate_adjustment_plans_from_base_scheme(base_scheme_data, original_plan, 
     return adjustment_plans
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5021, debug=True) 
+    app.run(host="0.0.0.0", port=5022, debug=True) 

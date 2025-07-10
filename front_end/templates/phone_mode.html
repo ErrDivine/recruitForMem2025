@@ -1,0 +1,2334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Mode - 考生信息管理 - 南京大学招生助手</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --apple-blue: #007AFF;
+            --apple-gray: #8E8E93;
+            --apple-light-gray: #F2F2F7;
+            --apple-dark: #1C1C1E;
+            --apple-green: #34C759;
+            --apple-red: #FF3B30;
+            --apple-orange: #FF9500;
+            --apple-purple: #AF52DE;
+            --apple-teal: #5AC8FA;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-bg-secondary: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --backdrop-blur: blur(12px);
+            --text-primary: rgba(255, 255, 255, 0.9);
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
+            animation: gradientShift 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary) !important;
+            text-decoration: none !important;
+        }
+
+        .navbar-brand:hover {
+            color: var(--apple-blue) !important;
+        }
+
+        .navbar-nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 12px;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            color: var(--text-primary) !important;
+        }
+
+        .nav-link.active {
+            background: var(--apple-blue);
+            color: white !important;
+            border-color: var(--apple-blue);
+        }
+
+        .nav-link.active:hover {
+            background: #0056D0;
+            color: white !important;
+        }
+
+        /* 页面容器 */
+        .page-container {
+            min-height: calc(100vh - 80px);
+            padding: 1rem 0;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--apple-green), var(--apple-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 返回按钮 */
+        .back-button {
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        /* 主要工作区域布局 */
+        .workspace {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: auto auto;
+            gap: 1rem;
+            min-height: calc(100vh - 200px);
+            padding-bottom: 1rem;
+        }
+
+        /* 待打电话名单 - 左侧竖长玻璃 */
+        .student-list-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            padding: 1.5rem;
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        .student-list-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .student-list {
+            max-height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+
+        .student-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .student-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-item.active {
+            background: var(--apple-green);
+            color: white;
+            border-color: var(--apple-green);
+        }
+
+        /* 学生信息区域 - 右侧大玻璃 */
+        .student-info-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+            height: fit-content;
+        }
+
+        .student-info-header {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--apple-green);
+            box-shadow: 0 0 0 2px rgba(52, 199, 89, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* 工作文件区域 - 底部大玻璃 */
+        .work-files-panel {
+            grid-column: 1 / -1;
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--glass-shadow);
+            padding: 1.5rem;
+            animation: fadeInUp 0.8s ease 0.3s both;
+            display: flex;
+            flex-direction: column;
+            min-height: 150vh;
+            max-height: none;
+        }
+
+        .files-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        /* 文件选择栏 */
+        .file-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .file-tab {
+            padding: 0.5rem 1rem;
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .file-tab:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .file-tab.active {
+            background: var(--apple-blue);
+            color: white;
+            border-color: var(--apple-blue);
+        }
+
+        /* 文件内容展示区域 */
+        .file-content {
+            flex: 1;
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 130vh;
+        }
+
+        /* 文件内容页面 */
+        .file-page {
+            flex: 1;
+            display: none;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 1rem;
+            height: 100%;
+            padding: 1.5rem;
+        }
+
+        .file-page.active {
+            display: block;
+        }
+
+        /* 文档内容样式优化 */
+        .file-page h3 {
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .file-page h4 {
+            color: var(--apple-blue);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        .file-page p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            text-align: justify;
+        }
+
+        .file-page strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* 翻页控件 */
+        .pagination-controls {
+            margin-top: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem 0 1rem 0;
+            border-top: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            border-radius: 0 0 12px 12px;
+            flex-shrink: 0;
+        }
+
+        .pagination-btn {
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pagination-btn:hover:not(.disabled) {
+            background: var(--apple-blue);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0 1rem;
+        }
+
+        /* 快速跳转 */
+        .page-jump {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-input {
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 0.3rem 0.5rem;
+            color: var(--text-primary);
+            width: 60px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .page-input:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+        }
+
+        .file-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 2rem;
+        }
+
+        /* PDF查看器按钮样式 */
+        .pdf-btn {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .pdf-btn:hover:not(:disabled) {
+            background: var(--apple-blue);
+            border-color: var(--apple-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .pdf-btn:disabled {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .pdf-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .workspace {
+                grid-template-columns: 250px 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .workspace {
+                grid-template-columns: 1fr;
+                grid-template-rows: 300px 1fr 250px;
+                height: auto;
+                min-height: auto;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .file-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+
+        /* 滚动条样式 */
+        .student-list::-webkit-scrollbar,
+        .student-info-panel::-webkit-scrollbar,
+        .file-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .student-list::-webkit-scrollbar-track,
+        .student-info-panel::-webkit-scrollbar-track,
+        .file-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .student-list::-webkit-scrollbar-thumb,
+        .student-info-panel::-webkit-scrollbar-thumb,
+        .file-content::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 3px;
+        }
+
+        .student-list::-webkit-scrollbar-thumb:hover,
+        .student-info-panel::-webkit-scrollbar-thumb:hover,
+        .file-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 专业选择拼图样式 */
+        .major-input-container {
+            position: relative;
+        }
+
+        .major-display-area {
+            background: var(--glass-bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            min-height: 45px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .major-display-area:empty::before {
+            content: "点击右侧按钮选择专业，或拖拽专业拼图到此处";
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .major-expand-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--apple-blue);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .major-expand-btn:hover {
+            background: #0056D0;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .major-expand-btn.expanded {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .major-drawer {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            padding: 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .major-drawer.open {
+            max-height: 300px;
+            opacity: 1;
+        }
+
+        .major-drawer-header {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .major-blocks-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .major-block {
+            background: linear-gradient(135deg, var(--apple-blue), var(--apple-purple));
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .major-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .major-block:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .major-block.selected {
+            background: linear-gradient(135deg, var(--apple-green), var(--apple-teal));
+        }
+
+        .major-block.in-display {
+            background: var(--glass-bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            position: relative;
+            padding-right: 2rem;
+        }
+
+        .major-block.in-display .remove-btn {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--apple-red);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .major-block.in-display .remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        /* 拖拽时的样式 */
+        .major-display-area.drag-over {
+            border-color: var(--apple-green);
+            background: rgba(52, 199, 89, 0.1);
+        }
+
+        .major-block.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        /* 添加记录按钮样式 */
+        .add-record-btn {
+            background: var(--apple-green);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+        }
+
+        .add-record-btn:hover {
+            background: #2e7d32;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-graduation-cap me-2"></i>
+                南京大学招生助手
+            </a>
+            
+            <!-- 导航菜单 -->
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home me-1"></i>首页
+                </a>
+                <a class="nav-link" href="/allocation_analysis">
+                    <i class="fas fa-chart-pie me-1"></i>名额分配分析
+                </a>
+                <a class="nav-link active" href="/student_management">
+                    <i class="fas fa-users me-1"></i>考生信息管理
+                </a>
+                <a class="nav-link" href="javascript:void(0)" onclick="showComingSoon('Love Yourself')">
+                    <i class="fas fa-heart me-1"></i>Love Yourself
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 页面内容 -->
+    <div class="page-container">
+        <div class="container-fluid">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <i class="fas fa-mobile-alt me-3"></i>Phone Mode
+                </h1>
+                <p class="page-subtitle">快速电话联系模式，专为电话沟通和实时信息采集设计</p>
+            </div>
+
+            <!-- 返回按钮 -->
+            <a href="/student_management" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                返回考生信息管理
+            </a>
+
+            <!-- 主要工作区域 -->
+            <div class="workspace">
+                <!-- 左侧：待打电话名单 -->
+                <div class="student-list-panel">
+                    <div class="student-list-header">
+                        <i class="fas fa-phone me-2"></i>
+                        待打电话名单
+                    </div>
+                    <div class="student-list" id="studentList">
+                        <!-- 学生名单将通过JavaScript动态加载 -->
+                        <div class="student-item active" onclick="selectStudent(this, '张三')">张三</div>
+                        <div class="student-item" onclick="selectStudent(this, '李四')">李四</div>
+                        <div class="student-item" onclick="selectStudent(this, '王五')">王五</div>
+                        <div class="student-item" onclick="selectStudent(this, '赵六')">赵六</div>
+                        <div class="student-item" onclick="selectStudent(this, '钱七')">钱七</div>
+                        <div class="student-item" onclick="selectStudent(this, '孙八')">孙八</div>
+                        <div class="student-item" onclick="selectStudent(this, '周九')">周九</div>
+                        <div class="student-item" onclick="selectStudent(this, '吴十')">吴十</div>
+                    </div>
+                </div>
+
+                <!-- 右侧：学生信息编辑区域 -->
+                <div class="student-info-panel">
+                    <div class="student-info-header">
+                        <i class="fas fa-user-edit me-2"></i>
+                        考生信息 - <span id="currentStudentName">张三</span>
+                    </div>
+                    
+                    <form id="studentInfoForm">
+                        <!-- 隐藏的学生ID字段 -->
+                        <input type="hidden" id="studentId" value="2024001">
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">姓名</label>
+                                <input type="text" class="form-input" id="studentName" value="张三">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">负责人</label>
+                                <input type="text" class="form-input" id="dueChargers" value="张老师, 李老师" readonly style="background: var(--glass-bg-secondary); color: var(--text-secondary);">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">高中学校</label>
+                                <input type="text" class="form-input" id="highSchool" value="江苏省南京市第一中学">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">考生类别</label>
+                                <select class="form-input" id="studentCategory">
+                                    <option value="true">理科生</option>
+                                    <option value="false">文科生</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">高考总分</label>
+                                <input type="number" class="form-input" id="totalScore" value="650" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">省排名</label>
+                                <input type="number" class="form-input" id="overallRank" value="1205">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">语文分数</label>
+                                <input type="number" class="form-input" id="chineseScore" value="128" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">数学分数</label>
+                                <input type="number" class="form-input" id="mathScore" value="142" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">学生联系电话</label>
+                                <input type="tel" class="form-input" id="teleStudent" value="138****5678">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">家长联系电话</label>
+                                <input type="tel" class="form-input" id="teleParent" value="139****8765">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">强基学校</label>
+                                <input type="text" class="form-input" id="sfpUniversity" value="" placeholder="如无强基计划则留空">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">是否服从调剂</label>
+                                <select class="form-input" id="transferable">
+                                    <option value="true">服从调剂</option>
+                                    <option value="false">不服从调剂</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">意向等级 (0-100)</label>
+                                <input type="number" class="form-input" id="level" value="85" min="0" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">录取状态</label>
+                                <select class="form-input" id="admissionStatus">
+                                    <option value="未处理">未处理</option>
+                                    <option value="已录取">已录取</option>
+                                    <option value="已滑档">已滑档</option>
+                                    <option value="调剂中">调剂中</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label class="form-label">意向专业</label>
+                                <div class="major-input-container">
+                                    <div class="major-display-area" id="intendedMajorsDisplay" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                        <!-- 选中的专业拼图将在这里显示 -->
+                                    </div>
+                                    <button type="button" class="major-expand-btn" onclick="toggleMajorDrawer('intended')">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                                <!-- 专业选择抽屉 -->
+                                <div class="major-drawer" id="intendedMajorDrawer">
+                                    <div class="major-drawer-header">选择意向专业（可拖拽排序）</div>
+                                    <div class="major-blocks-container" id="intendedMajorBlocks">
+                                        <!-- 专业拼图块将在这里动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label class="form-label">承诺专业 (招生组承诺)</label>
+                                <div class="major-input-container">
+                                    <div class="major-display-area" id="promiseMajorsDisplay" ondrop="drop(event)" ondragover="allowDrop(event)">
+                                        <!-- 选中的专业拼图将在这里显示 -->
+                                    </div>
+                                    <button type="button" class="major-expand-btn" onclick="toggleMajorDrawer('promise')">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                                <!-- 专业选择抽屉 -->
+                                <div class="major-drawer" id="promiseMajorDrawer">
+                                    <div class="major-drawer-header">选择承诺专业（可拖拽排序）</div>
+                                    <div class="major-blocks-container" id="promiseMajorBlocks">
+                                        <!-- 专业拼图块将在这里动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label class="form-label">历史沟通记录</label>
+                                <textarea class="form-input form-textarea" id="historicalRecords" readonly style="min-height: 80px; background: var(--glass-bg-secondary); color: var(--text-secondary); resize: none;">2024-01-15 14:30 - 张老师 - 初次联系，学生对计算机专业很感兴趣，家长也很支持
+2024-01-18 10:15 - 李老师 - 回访确认志愿，详细介绍了软件工程专业课程</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">负责人姓名</label>
+                                <input type="text" class="form-input" id="contactPerson" placeholder="请输入负责人姓名">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">沟通内容</label>
+                                <input type="text" class="form-input" id="communicationContent" placeholder="请输入本次沟通内容">
+                            </div>
+                        </div>
+
+                        <!-- 添加记录按钮 -->
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <button type="button" class="add-record-btn" onclick="addCommunicationRecord()">
+                                    <i class="fas fa-plus me-2"></i>添加沟通记录
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 操作按钮 -->
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <button type="button" class="btn btn-success" onclick="saveStudentInfo()" style="background: var(--apple-green); border: none; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; width: 100%; font-size: 1rem;">
+                                    <i class="fas fa-save me-2"></i>保存信息
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 底部：工作文件区域 -->
+                <div class="work-files-panel">
+                    <div class="files-header">
+                        <i class="fas fa-folder-open me-2"></i>
+                        工作文件
+                    </div>
+                    
+                    <!-- 文件选择栏 -->
+                    <div class="file-tabs">
+                        <div class="file-tab active" onclick="selectFile(this, '/static/files/1_【最新版】2025年南京大学黑龙江省招生工作安排docx.pdf', '2025年黑龙江省招生工作安排.pdf')">
+                            <i class="fas fa-file-pdf me-1"></i>2025年黑龙江省招生工作安排.pdf
+                        </div>
+                        <div class="file-tab" onclick="selectFile(this, 'demo', '招生简章.pdf')">
+                            <i class="fas fa-file-pdf me-1"></i>招生简章.pdf
+                        </div>
+                        <div class="file-tab" onclick="selectFile(this, 'demo', '专业介绍.pdf')">
+                            <i class="fas fa-file-pdf me-1"></i>专业介绍.pdf
+                        </div>
+                        <div class="file-tab" onclick="selectFile(this, 'demo', '考生统计表.xlsx')">
+                            <i class="fas fa-file-excel me-1"></i>考生统计表.xlsx
+                        </div>
+                        <div class="file-tab" onclick="selectFile(this, 'demo', '工作指南.docx')">
+                            <i class="fas fa-file-word me-1"></i>工作指南.docx
+                        </div>
+                    </div>
+                    
+                    <!-- 文件内容展示区域 -->
+                    <div class="file-content" id="fileContent">
+                        <!-- 自定义PDF查看器 -->
+                        <div id="pdfViewer" style="width: 100%; height: 100%; background: white; display: none; position: relative;">
+                            <!-- PDF渲染画布 -->
+                            <canvas id="pdfCanvas" style="width: 100%; height: calc(100% - 80px); background: white; display: block; margin: 0 auto;"></canvas>
+                            
+                            <!-- PDF控制栏 -->
+                            <div class="pdf-controls" style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: rgba(0, 0, 0, 0.9); backdrop-filter: var(--backdrop-blur); border-top: 2px solid rgba(0, 0, 0, 1); display: flex; align-items: center; justify-content: center; gap: 1rem; padding: 0 1rem; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);">
+                                <!-- 翻页控制 -->
+                                <button class="pdf-btn" id="pdfPrevBtn" onclick="prevPdfPage()" title="上一页">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                
+                                <!-- 页码信息 -->
+                                <div class="pdf-page-info" style="display: flex; align-items: center; gap: 0.5rem; color: white; font-size: 0.9rem; font-weight: 500;">
+                                    <span>第</span>
+                                    <input type="number" id="pdfPageInput" min="1" style="width: 60px; text-align: center; padding: 0.4rem; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 6px; background: rgba(255, 255, 255, 0.9); color: #333; font-weight: 600;" onchange="jumpToPdfPage(this.value)">
+                                    <span>页 / 共 <span id="pdfTotalPages">0</span> 页</span>
+                                </div>
+                                
+                                <button class="pdf-btn" id="pdfNextBtn" onclick="nextPdfPage()" title="下一页">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                                
+                                <!-- 缩放控制 -->
+                                <div class="pdf-zoom-controls" style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem;">
+                                    <button class="pdf-btn" onclick="zoomOut()" title="缩小">
+                                        <i class="fas fa-search-minus"></i>
+                                    </button>
+                                    <span id="zoomLevel" style="color: white; font-size: 0.9rem; min-width: 50px; text-align: center; font-weight: 500;">100%</span>
+                                    <button class="pdf-btn" onclick="zoomIn()" title="放大">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                    <button class="pdf-btn" onclick="fitToWidth()" title="适应宽度">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 默认占位符 -->
+                        <div id="filePlaceholder" class="file-placeholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 130vh; color: var(--text-secondary);">
+                            <i class="fas fa-file-pdf" style="font-size: 3rem; margin-bottom: 1rem; color: var(--apple-red);"></i>
+                            <h4>2025年南京大学黑龙江省招生工作安排</h4>
+                            <p>加载中，请稍候...</p>
+                        </div>
+                        
+                        <!-- 演示内容区域（用于非PDF文件） -->
+                        <div id="demoContent" style="display: none; padding: 2rem; overflow-y: auto; height: 130vh;">
+                            <!-- 演示内容将在这里动态加载 -->
+                        </div>
+                        
+                        <!-- 翻页控件（仅用于演示内容） -->
+                        <div class="pagination-controls" id="paginationControls" style="display: none;">
+                            <button class="pagination-btn" id="firstPageBtn" onclick="goToPage(1)">
+                                <i class="fas fa-angle-double-left"></i>
+                                首页
+                            </button>
+                            <button class="pagination-btn" id="prevPageBtn" onclick="prevPage()">
+                                <i class="fas fa-angle-left"></i>
+                                上页
+                            </button>
+                            
+                            <div class="pagination-info">
+                                第 <span id="currentPageNum">1</span> 页，共 <span id="totalPagesNum">1</span> 页
+                            </div>
+                            
+                            <button class="pagination-btn" id="nextPageBtn" onclick="nextPage()">
+                                下页
+                                <i class="fas fa-angle-right"></i>
+                            </button>
+                            <button class="pagination-btn" id="lastPageBtn" onclick="goToPage('last')">
+                                末页
+                                <i class="fas fa-angle-double-right"></i>
+                            </button>
+                            
+                            <div class="page-jump">
+                                <span style="color: var(--text-secondary); font-size: 0.9rem;">跳转到</span>
+                                <input type="number" class="page-input" id="pageJumpInput" min="1" placeholder="页码">
+                                <button class="pagination-btn" onclick="jumpToPage()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- PDF.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // 选择学生
+        function selectStudent(element, studentName) {
+            // 移除其他学生的活跃状态
+            document.querySelectorAll('.student-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 设置当前学生为活跃状态
+            element.classList.add('active');
+            
+            // 更新学生信息区域
+            document.getElementById('currentStudentName').textContent = studentName;
+            
+            // 模拟加载学生数据（实际项目中这里会从数据库获取）
+            loadStudentInfo(studentName);
+        }
+
+        // 加载学生信息
+        function loadStudentInfo(studentName) {
+            // 模拟符合数据库结构的学生数据
+            const studentData = {
+                '张三': {
+                    name: '张三',
+                    studentId: '2024001',
+                    highSchool: '江苏省南京市第一中学',
+                    category: true,  // true-理科生, false-文科生
+                    totalScore: 650.5,
+                    chineseScore: 128.0,
+                    mathScore: 142.0,
+                    overallRank: 1205,
+                    sfpUniversity: '', // 无强基计划
+                    teleStudent: '138****5678',
+                    teleParent: '139****8765',
+                    transferable: true, // 服从调剂
+                    level: 85, // 意向等级
+                    admissionStatus: '未处理',
+                    intendedMajors: ['计算机科学与技术', '软件工程', '人工智能'],
+                    promiseMajors: ['计算机科学与技术', '软件工程'],
+                    dueChargers: ['张老师', '李老师'],
+                    historicalRecords: '2024-01-15 14:30 - 张老师 - 初次联系，学生对计算机专业很感兴趣，家长也很支持\n2024-01-18 10:15 - 李老师 - 回访确认志愿，详细介绍了软件工程专业课程'
+                },
+                '李四': {
+                    name: '李四',
+                    studentId: '2024002',
+                    highSchool: '江苏省苏州中学',
+                    category: true,
+                    totalScore: 635.0,
+                    chineseScore: 125.0,
+                    mathScore: 138.0,
+                    overallRank: 1456,
+                    sfpUniversity: '清华大学', // 有强基计划
+                    teleStudent: '139****9876',
+                    teleParent: '137****5432',
+                    transferable: false, // 不服从调剂
+                    level: 78,
+                    admissionStatus: '调剂中',
+                    intendedMajors: ['电子信息工程', '通信工程', '自动化'],
+                    promiseMajors: ['电子信息工程'],
+                    dueChargers: ['王老师'],
+                    historicalRecords: '2024-01-16 09:00 - 王老师 - 家长接听，学生在校不便接电话\n2024-01-19 19:30 - 王老师 - 与学生直接沟通，了解专业偏好'
+                },
+                '王五': {
+                    name: '王五',
+                    studentId: '2024003',
+                    highSchool: '江苏省无锡市第一中学',
+                    category: false, // 文科生
+                    totalScore: 612.0,
+                    chineseScore: 132.0,
+                    mathScore: 118.0,
+                    overallRank: 2345,
+                    sfpUniversity: '',
+                    teleStudent: '150****1234',
+                    teleParent: '151****5678',
+                    transferable: true,
+                    level: 72,
+                    admissionStatus: '未处理',
+                    intendedMajors: ['汉语言文学', '新闻传播学', '法学'],
+                    promiseMajors: ['汉语言文学'],
+                    dueChargers: ['陈老师', '刘老师'],
+                    historicalRecords: '2024-01-17 16:00 - 陈老师 - 学生对文科专业很感兴趣，成绩优秀'
+                }
+                // 可以添加更多学生数据
+            };
+            
+            const data = studentData[studentName] || studentData['张三'];
+            
+            // 填充表单数据 - 按照数据库字段结构
+            document.getElementById('studentName').value = data.name;
+            document.getElementById('studentId').value = data.studentId;
+            document.getElementById('highSchool').value = data.highSchool;
+            document.getElementById('studentCategory').value = data.category.toString();
+            document.getElementById('totalScore').value = data.totalScore;
+            document.getElementById('chineseScore').value = data.chineseScore;
+            document.getElementById('mathScore').value = data.mathScore;
+            document.getElementById('overallRank').value = data.overallRank;
+            document.getElementById('sfpUniversity').value = data.sfpUniversity;
+            document.getElementById('teleStudent').value = data.teleStudent;
+            document.getElementById('teleParent').value = data.teleParent;
+            document.getElementById('transferable').value = data.transferable.toString();
+            document.getElementById('level').value = data.level;
+            document.getElementById('admissionStatus').value = data.admissionStatus;
+            document.getElementById('dueChargers').value = data.dueChargers.join(', ');
+            document.getElementById('historicalRecords').value = data.historicalRecords;
+            
+            // 清空新增记录输入框
+            document.getElementById('contactPerson').value = '';
+            document.getElementById('communicationContent').value = '';
+            
+            // 加载专业拼图
+            loadMajorBlocks(data.category);
+            updateMajorDisplay('intended', data.intendedMajors);
+            updateMajorDisplay('promise', data.promiseMajors);
+            
+            // 调整面板高度（等待DOM更新完成）
+            setTimeout(adjustPanelHeights, 100);
+        }
+
+        // 保存学生信息
+        function saveStudentInfo() {
+            // 收集表单数据
+            const studentData = {
+                name: document.getElementById('studentName').value,
+                studentId: document.getElementById('studentId').value,
+                highSchool: document.getElementById('highSchool').value,
+                category: document.getElementById('studentCategory').value === 'true',
+                totalScore: parseFloat(document.getElementById('totalScore').value),
+                chineseScore: parseFloat(document.getElementById('chineseScore').value),
+                mathScore: parseFloat(document.getElementById('mathScore').value),
+                overallRank: parseInt(document.getElementById('overallRank').value),
+                sfpUniversity: document.getElementById('sfpUniversity').value,
+                teleStudent: document.getElementById('teleStudent').value,
+                teleParent: document.getElementById('teleParent').value,
+                transferable: document.getElementById('transferable').value === 'true',
+                level: parseInt(document.getElementById('level').value),
+                admissionStatus: document.getElementById('admissionStatus').value,
+                intendedMajors: getSelectedMajors('intended'),
+                promiseMajors: getSelectedMajors('promise'),
+                historicalRecords: document.getElementById('historicalRecords').value
+            };
+
+            // 这里应该发送到后端保存到数据库
+            console.log('保存学生信息:', studentData);
+            
+            // 模拟保存成功提示
+            alert('学生信息已保存！');
+        }
+
+
+
+        // 专业数据库（根据学科分类）
+        const majorDatabase = {
+            science: [
+                '计算机科学与技术', '软件工程', '人工智能', '数据科学与大数据技术',
+                '电子信息工程', '通信工程', '自动化', '电气工程及其自动化',
+                '机械工程', '车辆工程', '土木工程', '建筑学',
+                '数学与应用数学', '物理学', '化学', '生物科学',
+                '临床医学', '口腔医学', '预防医学', '药学',
+                '材料科学与工程', '环境工程', '食品科学与工程'
+            ],
+            liberal: [
+                '汉语言文学', '新闻传播学', '法学', '经济学',
+                '国际经济与贸易', '金融学', '会计学', '工商管理',
+                '英语', '德语', '法语', '日语',
+                '历史学', '哲学', '社会学', '心理学',
+                '政治学与行政学', '教育学', '艺术设计'
+            ]
+        };
+
+        // 加载专业拼图块
+        function loadMajorBlocks(isScience) {
+            const majors = isScience ? majorDatabase.science : majorDatabase.liberal;
+            
+            // 为意向专业和承诺专业都加载相同的专业列表
+            ['intended', 'promise'].forEach(type => {
+                const container = document.getElementById(`${type}MajorBlocks`);
+                container.innerHTML = '';
+                
+                majors.forEach(major => {
+                    const block = document.createElement('div');
+                    block.className = 'major-block';
+                    block.draggable = true;
+                    block.textContent = major;
+                    block.ondragstart = drag;
+                    block.onclick = () => addMajorToDisplay(type, major);
+                    container.appendChild(block);
+                });
+            });
+        }
+
+        // 切换专业抽屉
+        function toggleMajorDrawer(type) {
+            const drawer = document.getElementById(`${type}MajorDrawer`);
+            const btn = drawer.previousElementSibling.querySelector('.major-expand-btn');
+            
+            drawer.classList.toggle('open');
+            btn.classList.toggle('expanded');
+        }
+
+        // 更新专业显示区域
+        function updateMajorDisplay(type, majors) {
+            const displayArea = document.getElementById(`${type}MajorsDisplay`);
+            displayArea.innerHTML = '';
+            
+            majors.forEach((major, index) => {
+                const block = document.createElement('div');
+                block.className = 'major-block in-display';
+                block.draggable = true;
+                block.innerHTML = `
+                    ${major}
+                    <button class="remove-btn" onclick="removeMajorFromDisplay('${type}', ${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                block.ondragstart = drag;
+                displayArea.appendChild(block);
+            });
+        }
+
+        // 添加专业到显示区域
+        function addMajorToDisplay(type, major) {
+            const displayArea = document.getElementById(`${type}MajorsDisplay`);
+            const existingMajors = Array.from(displayArea.children).map(block => 
+                block.textContent.trim()
+            );
+            
+            if (!existingMajors.includes(major)) {
+                const block = document.createElement('div');
+                block.className = 'major-block in-display';
+                block.draggable = true;
+                const index = displayArea.children.length;
+                block.innerHTML = `
+                    ${major}
+                    <button class="remove-btn" onclick="removeMajorFromDisplay('${type}', ${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                block.ondragstart = drag;
+                displayArea.appendChild(block);
+            }
+        }
+
+        // 从显示区域移除专业
+        function removeMajorFromDisplay(type, index) {
+            const displayArea = document.getElementById(`${type}MajorsDisplay`);
+            if (displayArea.children[index]) {
+                displayArea.removeChild(displayArea.children[index]);
+                // 重新分配移除按钮的索引
+                Array.from(displayArea.children).forEach((block, newIndex) => {
+                    const removeBtn = block.querySelector('.remove-btn');
+                    removeBtn.onclick = () => removeMajorFromDisplay(type, newIndex);
+                });
+            }
+        }
+
+        // 拖拽相关函数
+        function allowDrop(ev) {
+            ev.preventDefault();
+            ev.currentTarget.classList.add('drag-over');
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.textContent.trim());
+            ev.target.classList.add('dragging');
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            ev.currentTarget.classList.remove('drag-over');
+            
+            const majorName = ev.dataTransfer.getData("text");
+            const targetArea = ev.currentTarget;
+            
+            // 确定是意向专业还是承诺专业
+            const type = targetArea.id.includes('intended') ? 'intended' : 'promise';
+            
+            addMajorToDisplay(type, majorName);
+        }
+
+        // 获取选中的专业列表
+        function getSelectedMajors(type) {
+            const displayArea = document.getElementById(`${type}MajorsDisplay`);
+            return Array.from(displayArea.children).map(block => 
+                block.textContent.trim()
+            );
+        }
+
+        // 添加沟通记录
+        function addCommunicationRecord() {
+            const contactPerson = document.getElementById('contactPerson').value.trim();
+            const content = document.getElementById('communicationContent').value.trim();
+            
+            if (!contactPerson || !content) {
+                alert('请填写负责人姓名和沟通内容！');
+                return;
+            }
+            
+            const now = new Date();
+            // 格式化时间为 YYYY-MM-DD HH:MM 格式，与数据库和历史记录保持一致
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = `${year}-${month}-${day} ${hour}:${minute}`;
+            
+            const currentRecords = document.getElementById('historicalRecords').value;
+            const newRecord = `${timeStr} - ${contactPerson} - ${content}`;
+            
+            // 添加到历史记录
+            const updatedRecords = currentRecords ? `${currentRecords}\n${newRecord}` : newRecord;
+            document.getElementById('historicalRecords').value = updatedRecords;
+            
+            // 清空输入框
+            document.getElementById('contactPerson').value = '';
+            document.getElementById('communicationContent').value = '';
+            
+            alert('沟通记录已添加！');
+        }
+
+        // 当前文件分页数据
+        let currentFilePages = [];
+        let currentPageIndex = 0;
+
+        // 选择文件
+        function selectFile(element, filePathOrType, fileName) {
+            // 移除其他文件标签的活跃状态
+            document.querySelectorAll('.file-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 设置当前文件标签为活跃状态
+            element.classList.add('active');
+            
+            // 更新文件内容区域
+            if (filePathOrType.startsWith('/static/')) {
+                // 真实文件路径，使用iframe显示
+                loadRealFile(filePathOrType, fileName);
+            } else {
+                // 演示内容，使用原有的分页系统
+                loadDemoContent(filePathOrType, fileName);
+            }
+        }
+
+        // PDF查看器相关变量
+        let pdfDoc = null;
+        let currentPdfPage = 1;
+        let pdfScale = 1.5; // 提高初始缩放比例
+        let pdfCanvas = null;
+        let pdfContext = null;
+
+        // 加载真实文件
+        function loadRealFile(filePath, fileName) {
+            const pdfViewer = document.getElementById('pdfViewer');
+            const filePlaceholder = document.getElementById('filePlaceholder');
+            const demoContent = document.getElementById('demoContent');
+            const paginationControls = document.getElementById('paginationControls');
+            
+            // 隐藏演示内容和分页控件
+            demoContent.style.display = 'none';
+            paginationControls.style.display = 'none';
+            pdfViewer.style.display = 'none';
+            
+            // 显示加载提示
+            filePlaceholder.style.display = 'flex';
+            filePlaceholder.style.height = '130vh';
+            filePlaceholder.innerHTML = `
+                <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem; color: var(--apple-blue);"></i>
+                <h4>${fileName}</h4>
+                <p>正在加载PDF文件，请稍候...</p>
+            `;
+            
+            if (filePath.endsWith('.pdf')) {
+                // 使用自定义PDF查看器
+                loadPdfFile(filePath, fileName);
+            } else {
+                // 其他文件类型的处理
+                filePlaceholder.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; color: var(--apple-red);"></i>
+                    <h4>不支持的文件类型</h4>
+                    <p>当前只支持PDF文件查看</p>
+                `;
+            }
+            
+            console.log('开始加载真实文件:', fileName, filePath);
+        }
+
+        // 加载PDF文件
+        async function loadPdfFile(filePath, fileName) {
+            const filePlaceholder = document.getElementById('filePlaceholder');
+            const pdfViewer = document.getElementById('pdfViewer');
+            
+            try {
+                // 配置PDF.js
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                
+                // 加载PDF
+                const loadingTask = pdfjsLib.getDocument(filePath);
+                pdfDoc = await loadingTask.promise;
+                
+                console.log('PDF加载成功，总页数:', pdfDoc.numPages);
+                
+                // 初始化PDF查看器
+                await initPdfViewer();
+                
+                // 渲染第一页
+                currentPdfPage = 1;
+                await renderPdfPage(currentPdfPage);
+                
+                // 隐藏加载提示，显示PDF查看器
+                filePlaceholder.style.display = 'none';
+                pdfViewer.style.display = 'block';
+                
+            } catch (error) {
+                console.error('PDF加载失败:', error);
+                filePlaceholder.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem; color: var(--apple-red);"></i>
+                    <h4>PDF加载失败</h4>
+                    <p>${fileName} 无法加载，请检查文件是否存在或格式是否正确</p>
+                `;
+            }
+        }
+
+        // 初始化PDF查看器
+        async function initPdfViewer() {
+            pdfCanvas = document.getElementById('pdfCanvas');
+            pdfContext = pdfCanvas.getContext('2d');
+            
+            // 设置总页数
+            document.getElementById('pdfTotalPages').textContent = pdfDoc.numPages;
+            document.getElementById('pdfPageInput').max = pdfDoc.numPages;
+            
+            // 计算初始缩放比例以适应宽度
+            await calculateFitToWidthScale();
+        }
+
+        // 计算适应宽度的缩放比例
+        async function calculateFitToWidthScale() {
+            if (!pdfDoc) return;
+            
+            const container = document.getElementById('pdfViewer');
+            const containerWidth = container.clientWidth - 20; // 减少边距
+            const containerHeight = container.clientHeight - 100; // 减去控制栏高度
+            
+            try {
+                // 获取当前页面来计算比例
+                const page = await pdfDoc.getPage(currentPdfPage || 1);
+                const viewport = page.getViewport({ scale: 1 });
+                
+                // 计算宽度和高度的缩放比例
+                const scaleX = containerWidth / viewport.width;
+                const scaleY = containerHeight / viewport.height;
+                
+                // 选择较小的比例以确保完全适应，但增加一个最小缩放值
+                pdfScale = Math.min(scaleX, scaleY);
+                
+                // 设置更合理的缩放范围，确保内容足够大
+                if (pdfScale < 1.2) pdfScale = 1.2; // 最小缩放提高到120%
+                if (pdfScale > 4) pdfScale = 4; // 限制最大缩放
+                
+                updateZoomDisplay();
+            } catch (error) {
+                console.error('计算缩放比例失败:', error);
+            }
+        }
+
+        // 渲染PDF页面
+        async function renderPdfPage(pageNum) {
+            if (!pdfDoc) return;
+            
+            try {
+                const page = await pdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: pdfScale });
+                
+                // 设置canvas尺寸为实际渲染尺寸
+                pdfCanvas.width = viewport.width;
+                pdfCanvas.height = viewport.height;
+                
+                // 获取容器尺寸
+                const container = document.getElementById('pdfViewer');
+                const maxWidth = container.clientWidth - 20;
+                const maxHeight = container.clientHeight - 100;
+                
+                // 计算显示尺寸，充分利用可用空间
+                const displayWidth = Math.min(viewport.width, maxWidth);
+                const displayHeight = Math.min(viewport.height, maxHeight);
+                
+                // 设置canvas显示尺寸，确保内容足够大
+                pdfCanvas.style.width = displayWidth + 'px';
+                pdfCanvas.style.height = displayHeight + 'px';
+                
+                // 渲染页面
+                const renderContext = {
+                    canvasContext: pdfContext,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+                
+                // 更新页码显示
+                document.getElementById('pdfPageInput').value = pageNum;
+                updatePdfButtons();
+                
+                console.log('页面渲染完成:', pageNum, '显示尺寸:', displayWidth + 'x' + displayHeight);
+                
+            } catch (error) {
+                console.error('页面渲染失败:', error);
+            }
+        }
+
+        // 更新PDF按钮状态
+        function updatePdfButtons() {
+            const prevBtn = document.getElementById('pdfPrevBtn');
+            const nextBtn = document.getElementById('pdfNextBtn');
+            
+            prevBtn.disabled = currentPdfPage <= 1;
+            nextBtn.disabled = currentPdfPage >= pdfDoc.numPages;
+        }
+
+        // 更新缩放显示
+        function updateZoomDisplay() {
+            document.getElementById('zoomLevel').textContent = Math.round(pdfScale * 100) + '%';
+        }
+
+        // PDF翻页功能
+        async function prevPdfPage() {
+            if (currentPdfPage > 1) {
+                currentPdfPage--;
+                await renderPdfPage(currentPdfPage);
+            }
+        }
+
+        async function nextPdfPage() {
+            if (currentPdfPage < pdfDoc.numPages) {
+                currentPdfPage++;
+                await renderPdfPage(currentPdfPage);
+            }
+        }
+
+        async function jumpToPdfPage(pageNum) {
+            const page = parseInt(pageNum);
+            if (page >= 1 && page <= pdfDoc.numPages) {
+                currentPdfPage = page;
+                await renderPdfPage(currentPdfPage);
+            } else {
+                // 重置输入框到当前页
+                document.getElementById('pdfPageInput').value = currentPdfPage;
+            }
+        }
+
+        // PDF缩放功能
+        async function zoomIn() {
+            pdfScale *= 1.2;
+            if (pdfScale > 3) pdfScale = 3; // 限制最大缩放
+            updateZoomDisplay();
+            await renderPdfPage(currentPdfPage);
+        }
+
+        async function zoomOut() {
+            pdfScale /= 1.2;
+            if (pdfScale < 0.3) pdfScale = 0.3; // 限制最小缩放
+            updateZoomDisplay();
+            await renderPdfPage(currentPdfPage);
+        }
+
+        async function fitToWidth() {
+            calculateFitToWidthScale();
+            await renderPdfPage(currentPdfPage);
+        }
+
+        // 加载演示内容
+        function loadDemoContent(fileType, fileName) {
+            const fileViewer = document.getElementById('fileViewer');
+            const filePlaceholder = document.getElementById('filePlaceholder');
+            const demoContent = document.getElementById('demoContent');
+            
+            // 隐藏文件查看器和占位符
+            fileViewer.style.display = 'none';
+            filePlaceholder.style.display = 'none';
+            
+            // 显示演示内容
+            demoContent.style.display = 'block';
+            
+            // 加载演示文件内容（保持原有逻辑）
+            loadFileContent(fileType, fileName);
+        }
+
+        // 加载文件内容（演示内容）
+        function loadFileContent(fileType, fileName) {
+            // 模拟不同文件类型的分页内容
+            const fileContents = {
+                'pdf': {
+                    '2025年黑龙江省招生工作安排.pdf': [
+                        {
+                            title: '2025年南京大学黑龙江省招生工作安排',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">一、招生工作目标</h3>
+                                    <p><strong>1.1 总体目标</strong> 深入贯彻落实教育部关于高校招生工作的各项要求，全面推进黑龙江省2025年招生工作，确保生源质量稳步提升，为南京大学"双一流"建设提供优质人才支撑。</p>
+                                    <br>
+                                    <p><strong>1.2 具体指标</strong> 计划在黑龙江省招收本科生120人，其中理工类90人，文史类30人。重点关注哈尔滨三中、哈师大附中、大庆实验中学等重点中学的优秀生源。</p>
+                                    <br>
+                                    <p><strong>1.3 质量要求</strong> 理工类考生省排名控制在前2000名以内，文史类考生省排名控制在前800名以内，确保录取学生具备优秀的学术潜质和综合素养。</p>
+                                    <br>
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">二、组织架构</h3>
+                                    <p><strong>2.1 工作组成员</strong> 组长：招生办公室主任；副组长：学工部副部长、教务处副处长；成员：各学院招生负责人、研究生招生办相关人员。</p>
+                                    <br>
+                                    <p><strong>2.2 分工安排</strong> 招生宣传组负责线上线下宣传活动；考生联系组负责一对一沟通服务；数据分析组负责招生数据统计分析；后勤保障组负责招生活动的各项保障工作。</p>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '2025年南京大学黑龙江省招生工作安排',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">三、时间安排</h3>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue);">3.1 前期准备阶段 (2024年12月-2025年3月)</h4>
+                                        <p>• 制定详细招生计划和宣传方案</p>
+                                        <p>• 建立重点中学联系网络</p>
+                                        <p>• 准备招生宣传材料和专业介绍手册</p>
+                                        <p>• 组织招生工作人员培训</p>
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue);">3.2 宣传推广阶段 (2025年4月-5月)</h4>
+                                        <p>• 深入重点中学开展宣讲活动</p>
+                                        <p>• 举办线上招生咨询会</p>
+                                        <p>• 参加黑龙江省教育博览会</p>
+                                        <p>• 开展"南大学长回母校"活动</p>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--apple-blue);">3.3 志愿填报指导阶段 (2025年6月)</h4>
+                                        <p>• 高考成绩发布后第一时间联系目标考生</p>
+                                        <p>• 提供个性化的志愿填报指导</p>
+                                        <p>• 开通24小时招生咨询热线</p>
+                                        <p>• 组织优秀考生及家长来校参观</p>
+                                    </div>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '2025年南京大学黑龙江省招生工作安排',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">四、重点工作措施</h3>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue);">4.1 精准招生策略</h4>
+                                        <p>• 建立考生信息数据库，实施分层分类管理</p>
+                                        <p>• 对不同分数段考生制定差异化沟通策略</p>
+                                        <p>• 加强与考生家长的深度沟通</p>
+                                        <p>• 利用大数据分析提高招生效率</p>
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue);">4.2 品牌宣传推广</h4>
+                                        <p>• 制作高质量的招生宣传视频</p>
+                                        <p>• 邀请知名校友担任招生大使</p>
+                                        <p>• 在主流媒体投放招生广告</p>
+                                        <p>• 建设招生微信公众号和抖音账号</p>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--apple-blue);">4.3 服务质量提升</h4>
+                                        <p>• 建立招生服务标准化流程</p>
+                                        <p>• 培训专业的招生咨询团队</p>
+                                        <p>• 提供多渠道咨询服务平台</p>
+                                        <p>• 建立招生工作反馈和改进机制</p>
+                                    </div>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '2025年南京大学黑龙江省招生工作安排',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">五、保障措施</h3>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue);">5.1 组织保障</h4>
+                                        <p>• 成立黑龙江省招生工作专项小组</p>
+                                        <p>• 选派经验丰富的老师驻点黑龙江</p>
+                                        <p>• 建立定期沟通汇报机制</p>
+                                        <p>• 制定突发事件应急预案</p>
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue);">5.2 经费保障</h4>
+                                        <p>• 设立专项招生经费预算</p>
+                                        <p>• 保障宣传材料印刷和活动费用</p>
+                                        <p>• 提供招生人员差旅补贴</p>
+                                        <p>• 建立经费使用监督机制</p>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--apple-blue);">5.3 考核激励</h4>
+                                        <p>• 建立招生工作绩效考核体系</p>
+                                        <p>• 对优秀招生工作者给予表彰奖励</p>
+                                        <p>• 将招生工作成效纳入年度考核</p>
+                                        <p>• 建立招生工作经验分享机制</p>
+                                    </div>
+                                </div>
+                            `
+                        }
+                    ],
+                    '招生简章.pdf': [
+                        {
+                            title: '南京大学2024年招生简章',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">第一章 总则</h3>
+                                    <p><strong>第一条</strong> 为保证南京大学普通本科招生工作的顺利进行，切实维护学校和考生的合法权益，根据《中华人民共和国教育法》、《中华人民共和国高等教育法》等法律法规，特制定本章程。本章程是社会了解南京大学有关招生政策、规定及相关信息的主要渠道，是南京大学开展招生咨询和录取工作的主要依据。</p>
+                                    <br>
+                                    <p><strong>第二条</strong> 南京大学的校名为南京大学，英文校名为Nanjing University。学校代码为10284。法定住所为江苏省南京市栖霞区仙林大道163号。南京大学是中华人民共和国教育部直属、江苏省人民政府与教育部共建的全国重点大学。</p>
+                                    <br>
+                                    <p><strong>第三条</strong> 南京大学坐落于江苏省南京市，是教育部直属的全国重点大学，是国家"双一流"建设高校。学校有鼓楼、浦口、仙林三个校区，总占地面积4193亩，现有29个学院、88个本科专业，各类学生总计56000余人，其中本科生13500余人、硕士研究生18000余人、博士研究生8000余人、外国留学生3300余人。</p>
+                                    <br>
+                                    <p><strong>第四条</strong> 南京大学具有学士、硕士、博士学位授予权。本科生在规定的年限内达到所在专业毕业要求者，颁发南京大学本科毕业证书；符合学校学位授予有关规定者，颁发普通高等教育本科毕业生学士学位证书。</p>
+                                    <br>
+                                    <p><strong>第五条</strong> 南京大学的招生工作遵循"公平竞争、公正选拔、公开程序，德智体美劳全面考核、综合评价、择优录取"的原则，严格实施招生"阳光工程"，接受纪检监察部门、考生、家长以及社会各界的监督。</p>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '南京大学2024年招生简章',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">第二章 招生计划</h3>
+                                    <p><strong>第六条</strong> 南京大学根据国家政策要求，着力促进区域、城乡入学机会公平，优化生源结构，统筹考虑各省（区、市）考生人数、生源质量、区域协调发展及重点支持政策、毕业生就业、历年计划安排等因素，确定分省分专业招生计划。学校严格按照教育部下达的招生计划总数制订分省分专业招生计划。</p>
+                                    <br>
+                                    <p><strong>第七条</strong> 南京大学2024年度招生计划按照教育部核准的、由各省（区、市）招生主管部门向社会公布的分专业招生计划执行。各专业招生计划数以各省（区、市）招生主管部门最终公布的为准。学校不委托任何中介机构或个人进行招生录取工作，对以南京大学名义进行非法招生等活动的中介机构或个人，学校保留依法追究其责任的权利。</p>
+                                    <br>
+                                    <p><strong>第八条</strong> 根据教育部规定，南京大学预留本科招生计划总数的1%，用于调节各地统考上线生源的不平衡。预留计划使用时，坚持质量优先、公开透明的原则，主要投放到生源质量好、学校事业发展需要的省份。</p>
+                                    <br>
+                                    <p><strong>第九条</strong> 南京大学根据各省（区、市）考生报考情况和生源质量，与各省级招生主管部门协商确定调档比例。实行顺序志愿的省份，调档比例原则上控制在当地同批次招生计划数的120%以内；实行平行志愿的省份，调档比例原则上控制在当地同批次招生计划数的105%以内。</p>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '南京大学2024年招生简章',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">第三章 录取规则</h3>
+                                    <p><strong>第十条</strong> 南京大学认可教育部和各省（区、市）招生主管部门审定的全国性加分项目和分值。同一考生如符合多项加分条件，只取其中最高一项分值，且不得超过20分。在高考综合改革试点省份，加分政策按照相关省份招生主管部门的规定执行。</p>
+                                    <br>
+                                    <p><strong>第十一条</strong> 进档考生按投档成绩从高到低排序，依据考生专业志愿进行专业安排，各专业志愿间不设分数级差。当考生填报的专业志愿都未被录取时，若服从专业调剂，则根据考生成绩调剂到其他专业录取；若不服从专业调剂，则作退档处理。</p>
+                                    <br>
+                                    <p><strong>第十二条</strong> 在内蒙古自治区实行"招生计划1:1范围内按专业志愿排队录取"的录取规则；在江苏省，学业水平测试科目等级要求为物理或历史科目为A，其他科目为B+。</p>
+                                    <br>
+                                    <p><strong>第十三条</strong> 报考外国语言文学类、国际政治、工商管理类等专业的考生，如所在省份统一组织外语口试，须参加口试且成绩合格。</p>
+                                    <br>
+                                    <p><strong>第十四条</strong> 南京大学严格执行教育部、卫生部、中国残疾人联合会印发的《普通高等学校招生体检工作指导意见》及有关补充规定。根据专业特点，部分专业对考生身体条件有特殊要求。</p>
+                                </div>
+                            `
+                        }
+                    ],
+                    '专业介绍.pdf': [
+                        {
+                            title: '南京大学专业介绍',
+                            icon: 'fas fa-file-pdf',
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">理工类专业</h3>
+                                    <div style="margin-bottom: 2rem;">
+                                        <h4 style="color: var(--apple-blue);">计算机科学与技术</h4>
+                                        <p>本专业培养具有良好的数学基础和逻辑思维能力，掌握计算机科学与技术的基本理论、基本知识和基本技能，能在企事业单位、政府机关、科研院所等从事计算机应用、软件开发、系统维护等工作的高级专门人才。</p>
+                                        <p><strong>主要课程：</strong>程序设计基础、数据结构、计算机组成原理、操作系统、数据库系统、计算机网络、软件工程等。</p>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--apple-blue);">软件工程</h4>
+                                        <p>本专业培养适应国家信息化发展战略，具备扎实的软件工程理论基础和较强的工程实践能力，能够从事软件系统分析、设计、开发、测试、维护等工作的高素质工程技术人才。</p>
+                                        <p><strong>主要课程：</strong>面向对象程序设计、软件工程导论、需求工程、软件架构与设计模式、软件测试、项目管理等。</p>
+                                    </div>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '南京大学专业介绍',
+                            icon: 'fas fa-file-pdf', 
+                            color: 'var(--apple-red)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">人工智能与大数据</h3>
+                                    <div style="margin-bottom: 2rem;">
+                                        <h4 style="color: var(--apple-blue);">人工智能</h4>
+                                        <p>本专业面向国家人工智能发展战略需求，培养具有扎实数学基础、计算机基础和人工智能专业知识，能够在人工智能相关领域从事科研、开发、应用和管理等工作的高级专门人才。</p>
+                                        <p><strong>主要课程：</strong>机器学习、深度学习、计算机视觉、自然语言处理、知识图谱、智能系统设计等。</p>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--apple-blue);">数据科学与大数据技术</h4>
+                                        <p>本专业培养具有大数据思维、运用大数据思维及分析应用技术的高层次大数据人才。能够从事大数据相关的软硬件系统研发、数据分析挖掘、系统集成与管理维护等各方面工作。</p>
+                                        <p><strong>主要课程：</strong>数据挖掘、大数据处理技术、数据可视化、分布式计算、NoSQL数据库、数据仓库等。</p>
+                                    </div>
+                                </div>
+                            `
+                        }
+                    ]
+                },
+                'excel': {
+                    '考生统计表.xlsx': [
+                        {
+                            title: '考生统计表 - 理科生数据',
+                            icon: 'fas fa-file-excel',
+                            color: 'var(--apple-green)',
+                            content: `
+                                <div style="text-align: left;">
+                                    <h4 style="margin-bottom: 1rem; color: var(--text-primary);">理科生考生信息统计</h4>
+                                    <table style="width: 100%; border-collapse: collapse; color: var(--text-secondary);">
+                                        <tr style="background: var(--glass-bg-secondary);">
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: left;">姓名</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">总分</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">省排名</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">联系状态</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">意向专业</th>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">张三</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">650.5</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">1205</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;"><span style="color: var(--apple-green);">已联系</span></td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">计算机科学与技术</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">李四</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">635.0</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">1456</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;"><span style="color: var(--apple-orange);">待联系</span></td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">电子信息工程</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">赵六</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">628.5</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">1678</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;"><span style="color: var(--apple-green);">已联系</span></td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">软件工程</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '考生统计表 - 文科生数据',
+                            icon: 'fas fa-file-excel',
+                            color: 'var(--apple-green)',
+                            content: `
+                                <div style="text-align: left;">
+                                    <h4 style="margin-bottom: 1rem; color: var(--text-primary);">文科生考生信息统计</h4>
+                                    <table style="width: 100%; border-collapse: collapse; color: var(--text-secondary);">
+                                        <tr style="background: var(--glass-bg-secondary);">
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: left;">姓名</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">总分</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">省排名</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">联系状态</th>
+                                            <th style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">意向专业</th>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">王五</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">612.0</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">2345</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;"><span style="color: var(--apple-orange);">待联系</span></td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">汉语言文学</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">钱七</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">608.5</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">2567</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;"><span style="color: var(--apple-green);">已联系</span></td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">法学</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">孙八</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">605.0</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;">2789</td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border); text-align: center;"><span style="color: var(--apple-red);">未响应</span></td>
+                                            <td style="padding: 0.75rem; border: 1px solid var(--glass-border);">新闻传播学</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            `
+                        }
+                    ]
+                },
+                'word': {
+                    '工作指南.docx': [
+                        {
+                            title: '招生工作指南 - 电话联系流程',
+                            icon: 'fas fa-file-word',
+                            color: 'var(--apple-blue)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">电话联系标准流程</h3>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue); margin-bottom: 0.5rem;">1. 前期准备</h4>
+                                        <p>• 确认考生基本信息（姓名、分数、排名、联系方式）</p>
+                                        <p>• 了解考生所在高中和基本情况</p>
+                                        <p>• 准备相关专业介绍材料</p>
+                                        <p>• 确认通话环境安静、网络稳定</p>
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue); margin-bottom: 0.5rem;">2. 开场白</h4>
+                                        <p>• 自我介绍：姓名、南京大学招生组身份</p>
+                                        <p>• 确认考生身份和是否方便通话</p>
+                                        <p>• 简要说明通话目的</p>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--apple-blue); margin-bottom: 0.5rem;">3. 信息收集</h4>
+                                        <p>• 了解考生专业意向和兴趣方向</p>
+                                        <p>• 询问考生对南京大学的了解程度</p>
+                                        <p>• 了解家长意见和期望</p>
+                                    </div>
+                                </div>
+                            `
+                        },
+                        {
+                            title: '招生工作指南 - 专业介绍要点',
+                            icon: 'fas fa-file-word',
+                            color: 'var(--apple-blue)',
+                            content: `
+                                <div style="text-align: left; line-height: 1.8; color: var(--text-secondary);">
+                                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">专业介绍注意事项</h3>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue); margin-bottom: 0.5rem;">4. 专业介绍</h4>
+                                        <p>• 根据考生兴趣重点介绍相关专业</p>
+                                        <p>• 强调南京大学的优势和特色</p>
+                                        <p>• 介绍就业前景和发展方向</p>
+                                        <p>• 回答考生和家长的疑问</p>
+                                    </div>
+                                    <div style="margin-bottom: 1.5rem;">
+                                        <h4 style="color: var(--apple-blue); margin-bottom: 0.5rem;">5. 录取政策说明</h4>
+                                        <p>• 介绍我校录取原则和要求</p>
+                                        <p>• 说明专业调剂政策</p>
+                                        <p>• 解答志愿填报相关问题</p>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--apple-blue); margin-bottom: 0.5rem;">6. 结束和记录</h4>
+                                        <p>• 确认考生联系方式</p>
+                                        <p>• 提供后续咨询渠道</p>
+                                        <p>• 及时记录沟通结果</p>
+                                        <p>• 更新考生状态</p>
+                                    </div>
+                                </div>
+                            `
+                        }
+                    ]
+                }
+            };
+            
+            // 获取文件页面数据
+            const pages = fileContents[fileType] && fileContents[fileType][fileName] || [{
+                title: '文件加载中',
+                icon: 'fas fa-file',
+                color: 'var(--text-secondary)',
+                content: '<div class="file-placeholder"><p>文件内容加载中...</p></div>'
+            }];
+            
+            // 保存当前文件页面
+            currentFilePages = pages;
+            currentPageIndex = 0;
+            
+            // 渲染分页内容
+            renderFilePages();
+            
+            // 显示分页控件
+            const paginationControls = document.getElementById('paginationControls');
+            if (pages.length > 1) {
+                paginationControls.style.display = 'flex';
+                updatePaginationInfo();
+            } else {
+                paginationControls.style.display = 'none';
+            }
+        }
+
+        // 渲染文件页面
+        function renderFilePages() {
+            const demoContent = document.getElementById('demoContent');
+            demoContent.innerHTML = '';
+            
+            currentFilePages.forEach((pageData, index) => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = `file-page ${index === currentPageIndex ? 'active' : ''}`;
+                pageDiv.id = `page-${index + 1}`;
+                
+                pageDiv.innerHTML = `
+                    <div class="file-placeholder">
+                        <i class="${pageData.icon}" style="font-size: 2rem; margin-bottom: 1rem; color: ${pageData.color};"></i>
+                        <h4>${pageData.title}</h4>
+                        ${pageData.content}
+                    </div>
+                `;
+                
+                demoContent.appendChild(pageDiv);
+            });
+        }
+
+        // 翻页功能
+        function nextPage() {
+            if (currentPageIndex < currentFilePages.length - 1) {
+                currentPageIndex++;
+                showPage(currentPageIndex);
+            }
+        }
+
+        function prevPage() {
+            if (currentPageIndex > 0) {
+                currentPageIndex--;
+                showPage(currentPageIndex);
+            }
+        }
+
+        function goToPage(pageNum) {
+            if (pageNum === 'last') {
+                pageNum = currentFilePages.length;
+            }
+            const targetIndex = pageNum - 1;
+            if (targetIndex >= 0 && targetIndex < currentFilePages.length) {
+                currentPageIndex = targetIndex;
+                showPage(currentPageIndex);
+            }
+        }
+
+        function jumpToPage() {
+            const input = document.getElementById('pageJumpInput');
+            const pageNum = parseInt(input.value);
+            if (pageNum && pageNum >= 1 && pageNum <= currentFilePages.length) {
+                goToPage(pageNum);
+                input.value = '';
+            } else {
+                alert(`请输入1到${currentFilePages.length}之间的页码`);
+            }
+        }
+
+        function showPage(pageIndex) {
+            // 隐藏所有页面
+            document.querySelectorAll('.file-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 显示目标页面
+            const targetPage = document.querySelector(`#page-${pageIndex + 1}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // 更新分页信息
+            updatePaginationInfo();
+        }
+
+        function updatePaginationInfo() {
+            document.getElementById('currentPageNum').textContent = currentPageIndex + 1;
+            document.getElementById('totalPagesNum').textContent = currentFilePages.length;
+            
+            // 更新按钮状态
+            const firstBtn = document.getElementById('firstPageBtn');
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+            const lastBtn = document.getElementById('lastPageBtn');
+            
+            // 禁用/启用按钮
+            firstBtn.classList.toggle('disabled', currentPageIndex === 0);
+            prevBtn.classList.toggle('disabled', currentPageIndex === 0);
+            nextBtn.classList.toggle('disabled', currentPageIndex === currentFilePages.length - 1);
+            lastBtn.classList.toggle('disabled', currentPageIndex === currentFilePages.length - 1);
+            
+            // 更新页码输入框最大值
+            const pageInput = document.getElementById('pageJumpInput');
+            pageInput.max = currentFilePages.length;
+        }
+
+        // 显示功能开发中提示
+        function showComingSoon(featureName) {
+            let features = [];
+            
+            if (featureName === 'Love Yourself') {
+                features = [
+                    '• 身心健康监测和提醒',
+                    '• 工作压力评估和缓解建议',
+                    '• 时间管理和任务规划工具',
+                    '• 健康作息时间表制定',
+                    '• 心理健康自测和调节',
+                    '• 团队关怀和互动功能',
+                    '• 工作生活平衡指导'
+                ];
+            } else {
+                features = ['• 敬请期待更多功能'];
+            }
+            
+            const message = `${featureName}功能正在开发中，敬请期待！\n\n预期功能包括：\n${features.join('\n')}`;
+            alert(message);
+        }
+
+        // 调整面板高度，确保两个面板保持一致
+        function adjustPanelHeights() {
+            const studentInfoPanel = document.querySelector('.student-info-panel');
+            const studentListPanel = document.querySelector('.student-list-panel');
+            
+            if (studentInfoPanel && studentListPanel) {
+                // 先重置学生列表面板的高度
+                studentListPanel.style.height = 'auto';
+                
+                // 等待下一帧确保渲染完成
+                setTimeout(() => {
+                    const infoHeight = studentInfoPanel.offsetHeight;
+                    // 设置学生列表面板与信息面板相同高度
+                    studentListPanel.style.height = infoHeight + 'px';
+                    console.log('面板高度已调整:', infoHeight + 'px');
+                }, 100);
+            }
+        }
+
+        // 窗口大小变化时重新渲染PDF
+        async function handleResize() {
+            adjustPanelHeights();
+            if (pdfDoc && currentPdfPage) {
+                // 重新计算适应宽度的缩放比例
+                calculateFitToWidthScale();
+                // 重新渲染当前页面
+                await renderPdfPage(currentPdfPage);
+            }
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Phone Mode 页面已加载完成');
+            
+            // 加载默认学生信息
+            loadStudentInfo('张三');
+            
+            // 默认加载第一个文件（真实PDF文件）
+            const firstFileTab = document.querySelector('.file-tab');
+            if (firstFileTab) {
+                // 延迟一点时间确保UI已经渲染完成
+                setTimeout(() => {
+                    firstFileTab.click();
+                }, 100);
+            }
+            
+            // 调整面板高度
+            setTimeout(adjustPanelHeights, 200);
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', handleResize);
+            
+            // 添加键盘快捷键支持
+            document.addEventListener('keydown', function(e) {
+                if (!pdfDoc) return;
+                
+                switch(e.key) {
+                    case 'ArrowLeft':
+                    case 'PageUp':
+                        e.preventDefault();
+                        prevPdfPage();
+                        break;
+                    case 'ArrowRight':
+                    case 'PageDown':
+                        e.preventDefault();
+                        nextPdfPage();
+                        break;
+                    case 'Home':
+                        e.preventDefault();
+                        jumpToPdfPage(1);
+                        break;
+                    case 'End':
+                        e.preventDefault();
+                        jumpToPdfPage(pdfDoc.numPages);
+                        break;
+                    case '=':
+                    case '+':
+                        if (e.ctrlKey || e.metaKey) {
+                            e.preventDefault();
+                            zoomIn();
+                        }
+                        break;
+                    case '-':
+                        if (e.ctrlKey || e.metaKey) {
+                            e.preventDefault();
+                            zoomOut();
+                        }
+                        break;
+                    case '0':
+                        if (e.ctrlKey || e.metaKey) {
+                            e.preventDefault();
+                            fitToWidth();
+                        }
+                        break;
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

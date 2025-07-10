@@ -434,12 +434,218 @@
             -webkit-backdrop-filter: var(--backdrop-blur);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
+            box-shadow: 
+                0 25px 50px rgba(31, 38, 135, 0.3),
+                0 15px 30px rgba(31, 38, 135, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.05) 50%, 
+                rgba(255, 255, 255, 0.1) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .modal-header, .modal-body {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 模态框动画 */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8) translateY(-50px);
+            opacity: 0;
+            transition: all 0.3s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1) translateY(0);
+            opacity: 1;
         }
 
         .modal-header {
             border-bottom: 1px solid var(--glass-border);
             border-radius: 20px 20px 0 0;
             background: var(--glass-bg-secondary);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+        }
+
+        .modal-body {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-radius: 0 0 20px 20px;
+            padding: 2rem;
+        }
+
+        /* 模态框内的表格样式 */
+        .modal-body .table {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-body .table thead th {
+            background: var(--glass-bg-secondary);
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .modal-body .table tbody td {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .modal-body .table tbody tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-body .table tbody tr:hover td {
+            background: rgba(0, 122, 255, 0.15);
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+
+        /* 模态框内的标题样式 */
+        .modal-body h6 {
+            background: linear-gradient(-45deg, #007AFF, #34C759, #5AC8FA, #AF52DE);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+            animation: subtleGradient 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+        }
+
+        .modal-body h6:first-child {
+            margin-top: 0;
+        }
+
+        /* 模态框内的卡片和容器 */
+        .modal-body .alert {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-body .alert-success {
+            background: rgba(52, 199, 89, 0.15);
+            border-color: rgba(52, 199, 89, 0.3);
+        }
+
+        .modal-body .alert-warning {
+            background: rgba(255, 159, 10, 0.15);
+            border-color: rgba(255, 159, 10, 0.3);
+        }
+
+        .modal-body .alert-danger {
+            background: rgba(255, 59, 48, 0.15);
+            border-color: rgba(255, 59, 48, 0.3);
+        }
+
+        /* 模态框内的文本样式 */
+        .modal-body .text-success {
+            color: var(--apple-green) !important;
+            font-weight: 600;
+        }
+
+        .modal-body .text-danger {
+            color: var(--apple-red) !important;
+            font-weight: 600;
+        }
+
+        .modal-body .text-muted {
+            color: var(--text-secondary) !important;
+        }
+
+        /* 模态框内的分隔容器 */
+        .modal-body > div:not(:last-child) {
+            margin-bottom: 2rem;
+        }
+
+        /* 模态框关闭按钮 */
+        .modal-header .btn-close {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            margin: 0;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-header .btn-close:hover {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: var(--apple-red);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* 模态框标题 */
+        .modal-title {
+            background: linear-gradient(-45deg, #007AFF, #34C759, #5AC8FA, #AF52DE);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 0.5px;
+            animation: subtleGradient 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+        }
+
+        /* 模态框内的数据块 */
+        .modal-body .data-block {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body .table-responsive {
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
         }
 
         /* 加载动画 */
@@ -866,6 +1072,12 @@
                             <button type="button" class="btn btn-info btn-lg ms-2" onclick="testModal()">
                                 🧪 测试模态框
                             </button>
+                            <button type="button" class="btn btn-warning btn-lg ms-2" onclick="debugModal()">
+                                🔍 诊断问题
+                            </button>
+                            <button type="button" class="btn btn-success btn-lg ms-2" onclick="quickFix()">
+                                ⚡ 一键修复
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -1038,39 +1250,399 @@
         // 测试模态框功能
         function testModal() {
             try {
-                console.log('测试模态框开始');
+                console.log('🧪 测试模态框开始...');
                 
+                // 检查Bootstrap是否可用
+                if (typeof bootstrap === 'undefined') {
+                    alert('❌ Bootstrap未加载！请检查网络连接或CDN');
+                    return;
+                }
+                console.log('✅ Bootstrap已加载');
+                
+                // 检查模态框元素
                 const modalElement = document.getElementById('schemeDetailModal');
                 const titleElement = document.getElementById('schemeDetailTitle');
                 const bodyElement = document.getElementById('schemeDetailBody');
                 
+                console.log('📋 检查模态框元素:');
+                console.log('  - modalElement:', modalElement ? '存在' : '不存在');
+                console.log('  - titleElement:', titleElement ? '存在' : '不存在');
+                console.log('  - bodyElement:', bodyElement ? '存在' : '不存在');
+                
                 if (!modalElement || !titleElement || !bodyElement) {
-                    alert('模态框元素缺失！请检查页面结构');
+                    alert('❌ 模态框元素缺失！请检查页面结构');
                     return;
                 }
                 
-                titleElement.textContent = '🧪 模态框测试';
-                bodyElement.innerHTML = `
-                    <div class="alert alert-success">
-                        <h6>✅ 模态框测试成功！</h6>
-                        <p>如果您能看到这个消息，说明模态框功能正常。</p>
-                        <ul>
-                            <li>Bootstrap版本: 5.3.2</li>
-                            <li>模态框元素: 正常</li>
-                            <li>JavaScript: 正常</li>
-                        </ul>
-                    </div>
-                `;
+                // 检查模态框的CSS类
+                console.log('🎨 模态框CSS类:', modalElement.className);
                 
-                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-                modal.show();
-                console.log('测试模态框显示完成');
+                console.log('📝 准备显示模态框...');
+                
+                // 使用安全的模态框显示函数
+                try {
+                    const testContent = `
+                        <div class="alert alert-success">
+                            <h6>✅ 模态框测试成功！</h6>
+                            <p>如果您能看到这个消息，说明模态框功能正常。</p>
+                            <ul>
+                                <li>Bootstrap版本: 5.3.2</li>
+                                <li>模态框元素: 正常</li>
+                                <li>JavaScript: 正常</li>
+                                <li>模态框ID: ${modalElement.id}</li>
+                                <li>当前时间: ${new Date().toLocaleTimeString()}</li>
+                            </ul>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                        </div>
+                    `;
+                    
+                    safeShowModal(modalElement, '🧪 模态框测试', testContent);
+                    console.log('✅ 使用安全显示函数成功');
+                    
+                } catch (modalError) {
+                    console.error('❌ 安全显示模态框失败:', modalError);
+                    alert(`模态框显示失败: ${modalError.message}`);
+                }
                 
             } catch (error) {
-                console.error('测试模态框失败:', error);
+                console.error('❌ 测试模态框失败:', error);
                 alert(`模态框测试失败: ${error.message}`);
             }
         }
+
+        // 诊断模态框问题 (增强版)
+        function debugModal() {
+            try {
+                console.log('🔍 开始诊断模态框问题...');
+                let diagnosticInfo = '🔍 模态框诊断报告:\n\n';
+                
+                // 1. 检查Bootstrap
+                if (typeof bootstrap === 'undefined') {
+                    diagnosticInfo += '❌ Bootstrap: 未加载\n';
+                } else {
+                    diagnosticInfo += '✅ Bootstrap: 已加载\n';
+                }
+                
+                // 2. 检查模态框元素
+                const modalElement = document.getElementById('schemeDetailModal');
+                if (!modalElement) {
+                    diagnosticInfo += '❌ 模态框元素: 不存在\n';
+                    alert(diagnosticInfo);
+                    return;
+                } else {
+                    diagnosticInfo += '✅ 模态框元素: 存在\n';
+                }
+                
+                // 3. 检查CSS样式
+                const styles = window.getComputedStyle(modalElement);
+                diagnosticInfo += `📋 CSS样式信息:\n`;
+                diagnosticInfo += `  - display: ${styles.display}\n`;
+                diagnosticInfo += `  - position: ${styles.position}\n`;
+                diagnosticInfo += `  - z-index: ${styles.zIndex}\n`;
+                diagnosticInfo += `  - background: ${styles.background}\n`;
+                diagnosticInfo += `  - backdrop-filter: ${styles.backdropFilter}\n`;
+                
+                // 4. 检查模态框状态
+                const isModalShown = modalElement.classList.contains('show');
+                diagnosticInfo += `📊 模态框状态:\n`;
+                diagnosticInfo += `  - 当前显示: ${isModalShown ? '是' : '否'}\n`;
+                diagnosticInfo += `  - CSS类: ${modalElement.className}\n`;
+                
+                // 5. 检查模态框层级
+                const modalDialog = modalElement.querySelector('.modal-dialog');
+                if (modalDialog) {
+                    const dialogStyles = window.getComputedStyle(modalDialog);
+                    diagnosticInfo += `📐 模态框对话框:\n`;
+                    diagnosticInfo += `  - transform: ${dialogStyles.transform}\n`;
+                    diagnosticInfo += `  - opacity: ${dialogStyles.opacity}\n`;
+                } else {
+                    diagnosticInfo += '❌ 模态框对话框: 不存在\n';
+                }
+                
+                // 6. 检查backdrop
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    diagnosticInfo += '✅ 模态框背景: 存在\n';
+                } else {
+                    diagnosticInfo += '❌ 模态框背景: 不存在\n';
+                }
+                
+                // 7. 检查数据状态
+                diagnosticInfo += `📊 数据状态:\n`;
+                diagnosticInfo += `  - analysisData: ${analysisData ? '已加载' : '未加载'}\n`;
+                diagnosticInfo += `  - isShowingModal: ${isShowingModal ? '是' : '否'}\n`;
+                
+                // 8. 检查页面完整性
+                const runButton = document.getElementById('runAnalysisBtn');
+                const resultSection = document.getElementById('result-section');
+                diagnosticInfo += `🔍 页面元素检查:\n`;
+                diagnosticInfo += `  - 分析按钮: ${runButton ? '存在' : '不存在'}\n`;
+                diagnosticInfo += `  - 结果区域: ${resultSection ? (resultSection.style.display === 'none' ? '隐藏' : '显示') : '不存在'}\n`;
+                
+                // 9. 检查可能的错误
+                diagnosticInfo += `🔧 建议修复:\n`;
+                if (typeof bootstrap === 'undefined') {
+                    diagnosticInfo += '• 检查网络连接和Bootstrap CDN\n';
+                }
+                if (!modalElement) {
+                    diagnosticInfo += '• 检查HTML模态框结构\n';
+                }
+                if (isShowingModal) {
+                    diagnosticInfo += '• 重置isShowingModal变量\n';
+                }
+                if (!analysisData) {
+                    diagnosticInfo += '• ⭐ 先运行分析生成数据（这是最可能的原因）\n';
+                }
+                if (!backdrop && modalElement.classList.contains('show')) {
+                    diagnosticInfo += '• 修复模态框backdrop问题\n';
+                }
+                
+                console.log(diagnosticInfo);
+                alert(diagnosticInfo);
+                
+                // 强制修复模态框状态和backdrop问题
+                if (modalElement) {
+                    // 完全重置模态框
+                    modalElement.classList.remove('show');
+                    modalElement.style.display = 'none';
+                    modalElement.setAttribute('aria-hidden', 'true');
+                    modalElement.removeAttribute('aria-modal');
+                    modalElement.removeAttribute('role');
+                    
+                    // 移除所有可能的backdrop
+                    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+                        backdrop.remove();
+                    });
+                    
+                    // 恢复body样式
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                    document.body.style.marginRight = '';
+                    
+                    // 如果存在Bootstrap实例，销毁它
+                    try {
+                        const existingModal = bootstrap.Modal.getInstance(modalElement);
+                        if (existingModal) {
+                            existingModal.dispose();
+                        }
+                    } catch (e) {
+                        console.log('销毁现有模态框实例:', e.message);
+                    }
+                    
+                    console.log('🔧 模态框状态已完全重置');
+                }
+                
+                // 重置JavaScript状态
+                isShowingModal = false;
+                
+                // 如果没有数据，提示用户
+                if (!analysisData) {
+                    setTimeout(() => {
+                        if (confirm('检测到数据未加载。是否立即滚动到页面顶部运行分析？')) {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            // 高亮显示运行按钮
+                            if (runButton) {
+                                runButton.style.boxShadow = '0 0 20px #007AFF';
+                                runButton.style.transform = 'scale(1.05)';
+                                setTimeout(() => {
+                                    runButton.style.boxShadow = '';
+                                    runButton.style.transform = '';
+                                }, 3000);
+                            }
+                        }
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                console.error('❌ 诊断失败:', error);
+                alert(`诊断失败: ${error.message}`);
+            }
+        }
+
+                 // 修复模态框backdrop问题的辅助函数
+         function fixModalBackdrop() {
+             try {
+                 // 移除所有残留的backdrop
+                 document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+                     backdrop.remove();
+                 });
+                 
+                 // 重置body状态
+                 document.body.classList.remove('modal-open');
+                 document.body.style.overflow = '';
+                 document.body.style.paddingRight = '';
+                 document.body.style.marginRight = '';
+                 
+                 // 重置所有模态框状态
+                 document.querySelectorAll('.modal').forEach(modal => {
+                     modal.classList.remove('show');
+                     modal.style.display = 'none';
+                     modal.setAttribute('aria-hidden', 'true');
+                     modal.removeAttribute('aria-modal');
+                     modal.removeAttribute('role');
+                 });
+                 
+                 console.log('✅ 模态框backdrop问题已修复');
+             } catch (error) {
+                 console.error('❌ 修复backdrop失败:', error);
+             }
+         }
+
+         // 安全的模态框显示函数
+         function safeShowModal(modalElement, title, content) {
+             try {
+                 if (!modalElement) {
+                     throw new Error('模态框元素不存在');
+                 }
+                 
+                 // 先清理所有残留状态
+                 fixModalBackdrop();
+                 
+                 // 销毁现有实例
+                 try {
+                     const existingModal = bootstrap.Modal.getInstance(modalElement);
+                     if (existingModal) {
+                         existingModal.dispose();
+                     }
+                 } catch (e) {
+                     console.log('清理现有实例:', e.message);
+                 }
+                 
+                 // 设置内容
+                 if (title) {
+                     const titleElement = document.getElementById('schemeDetailTitle');
+                     if (titleElement) titleElement.textContent = title;
+                 }
+                 
+                 if (content) {
+                     const bodyElement = document.getElementById('schemeDetailBody');
+                     if (bodyElement) bodyElement.innerHTML = content;
+                 }
+                 
+                 // 创建新的模态框实例，强制配置backdrop
+                 const modal = new bootstrap.Modal(modalElement, {
+                     backdrop: true,
+                     keyboard: true,
+                     focus: true
+                 });
+                 
+                 // 添加事件监听器
+                 modalElement.addEventListener('shown.bs.modal', function() {
+                     console.log('✅ 模态框成功显示');
+                 }, { once: true });
+                 
+                 modalElement.addEventListener('hidden.bs.modal', function() {
+                     console.log('✅ 模态框已隐藏');
+                     isShowingModal = false;
+                 }, { once: true });
+                 
+                 // 显示模态框
+                 modal.show();
+                 console.log('📣 模态框显示命令已执行');
+                 
+                 return modal;
+                 
+             } catch (error) {
+                 console.error('❌ 安全显示模态框失败:', error);
+                 isShowingModal = false;
+                 throw error;
+             }
+         }
+
+         // 一键修复功能
+         function quickFix() {
+             try {
+                 console.log('⚡ 开始一键修复...');
+                 
+                 // 1. 修复模态框状态
+                 fixModalBackdrop();
+                 
+                 // 2. 重置全局状态
+                 isShowingModal = false;
+                 
+                 // 3. 检查数据状态
+                 if (!analysisData) {
+                     const confirmed = confirm('🎯 检测到数据未加载！\n\n这是模态框无法显示的主要原因。\n\n是否立即滚动到页面顶部运行分析？');
+                     if (confirmed) {
+                         window.scrollTo({ top: 0, behavior: 'smooth' });
+                         
+                         // 高亮显示运行按钮
+                         const runButton = document.getElementById('runAnalysisBtn');
+                         if (runButton) {
+                             runButton.style.boxShadow = '0 0 30px #007AFF, 0 0 60px #007AFF';
+                             runButton.style.transform = 'scale(1.1)';
+                             runButton.style.zIndex = '9999';
+                             runButton.style.position = 'relative';
+                             
+                             // 添加闪烁效果
+                             let blinkCount = 0;
+                             const blinkInterval = setInterval(() => {
+                                 runButton.style.opacity = runButton.style.opacity === '0.5' ? '1' : '0.5';
+                                 blinkCount++;
+                                 if (blinkCount >= 6) {
+                                     clearInterval(blinkInterval);
+                                     runButton.style.opacity = '1';
+                                 }
+                             }, 500);
+                             
+                             setTimeout(() => {
+                                 runButton.style.boxShadow = '';
+                                 runButton.style.transform = '';
+                                 runButton.style.zIndex = '';
+                                 runButton.style.position = '';
+                             }, 5000);
+                         }
+                         
+                         alert('✅ 模态框状态已修复！\n\n💡 请点击上方高亮的"🚀 生成数据"按钮运行分析，\n然后再测试模态框功能。');
+                         return;
+                     }
+                 }
+                 
+                 // 4. 测试修复效果
+                 const modalElement = document.getElementById('schemeDetailModal');
+                 if (!modalElement) {
+                     alert('❌ 模态框元素缺失，请刷新页面');
+                     return;
+                 }
+                 
+                 try {
+                     const testTitle = '⚡ 一键修复成功！';
+                     const testContent = `
+                         <div class="alert alert-success">
+                             <h6>✅ 修复完成！</h6>
+                             <p>恭喜！模态框问题已成功修复。</p>
+                             <ul>
+                                 <li>✅ 模态框状态重置</li>
+                                 <li>✅ Backdrop问题修复</li>
+                                 <li>✅ JavaScript状态重置</li>
+                                 <li>✅ Bootstrap实例重新创建</li>
+                             </ul>
+                             <hr>
+                             <p><strong>🎯 下一步操作：</strong></p>
+                             <ol>
+                                 <li>关闭此窗口</li>
+                                 <li>运行分析生成数据</li>
+                                 <li>点击"详情"按钮测试功能</li>
+                             </ol>
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                         </div>
+                     `;
+                     
+                     safeShowModal(modalElement, testTitle, testContent);
+                     
+                     console.log('✅ 一键修复完成');
+                     
+                 } catch (modalError) {
+                     console.error('❌ 测试模态框失败:', modalError);
+                     alert(`⚠️ 模态框修复完成，但测试显示时出现问题：\n${modalError.message}\n\n请刷新页面后重试。`);
+                 }
+                 
+             } catch (error) {
+                 console.error('❌ 一键修复失败:', error);
+                 alert(`一键修复失败: ${error.message}`);
+             }
+         }
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -1667,11 +2239,21 @@
             }
         }
 
+        // 防止重复点击的变量
+        let isShowingModal = false;
+        
         // 显示原始方案详情模态框
         function showOriginalSchemeDetail(schemeIndex) {
+            // 防止重复点击
+            if (isShowingModal) {
+                console.log('模态框正在显示，忽略重复点击');
+                return;
+            }
+            
             try {
-                console.log('开始显示方案详情，schemeIndex:', schemeIndex);
-                console.log('analysisData:', analysisData);
+                isShowingModal = true;
+                // console.log('开始显示方案详情，schemeIndex:', schemeIndex);
+                // console.log('analysisData:', analysisData);
                 
                 if (!analysisData || !analysisData.original_base_schemes) {
                     console.error('分析数据不存在:', analysisData);
@@ -1686,7 +2268,7 @@
                     return;
                 }
 
-                console.log('找到方案数据:', baseResult);
+                // console.log('找到方案数据:', baseResult);
 
                 // 获取模态框元素
                 const modalElement = document.getElementById('schemeDetailModal');
@@ -1728,32 +2310,40 @@
                 let modal;
                 try {
                     modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-                    console.log('模态框实例创建成功');
+                    // console.log('模态框实例创建成功');
                 } catch (modalError) {
                     console.error('创建模态框实例失败:', modalError);
                     alert('模态框初始化失败，请刷新页面重试');
                     return;
                 }
                 
-                // 添加事件监听器
-                modalElement.addEventListener('hidden.bs.modal', function () {
-                    console.log('模态框已关闭');
-                }, { once: true });
-                
-                // 显示模态框
+                // 显示模态框（移除重复的事件监听器绑定）
                 modal.show();
-                console.log('模态框显示命令已执行');
+                // console.log('模态框显示命令已执行');
+                
+                // 模态框显示后重置状态
+                setTimeout(() => {
+                    isShowingModal = false;
+                }, 500);
                 
             } catch (error) {
                 console.error('显示原始方案详情时发生错误:', error);
                 alert(`显示详情失败: ${error.message}\n请检查浏览器控制台获取详细信息`);
+                isShowingModal = false; // 错误时也重置状态
             }
         }
 
         // 显示调整方案详情模态框
         function showAdjustmentPlanDetail(baseSchemeIndex, adjustmentIndex) {
+            // 防止重复点击
+            if (isShowingModal) {
+                console.log('模态框正在显示，忽略重复点击');
+                return;
+            }
+            
             try {
-                console.log('显示调整方案详情:', baseSchemeIndex, adjustmentIndex);
+                isShowingModal = true;
+                // console.log('显示调整方案详情:', baseSchemeIndex, adjustmentIndex);
                 
                 const baseSchemeData = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex);
                 if (!baseSchemeData || !baseSchemeData.adjustment_plans[adjustmentIndex]) {
@@ -1836,9 +2426,15 @@
                 document.getElementById('schemeDetailBody').innerHTML = detailHtml;
                 modal.show();
                 
+                // 模态框显示后重置状态
+                setTimeout(() => {
+                    isShowingModal = false;
+                }, 500);
+                
             } catch (error) {
                 console.error('显示调整方案详情时发生错误:', error);
                 alert(`显示详情失败: ${error.message}\n请检查浏览器控制台获取详细信息`);
+                isShowingModal = false; // 错误时也重置状态
             }
         }
 
@@ -1896,8 +2492,15 @@
 
         // 显示具体录取方案详情
         function showRecordingSchemeDetail(baseSchemeIndex, adjustmentIndex, schemeIndex) {
+            // 防止重复点击
+            if (isShowingModal) {
+                console.log('模态框正在显示，忽略重复点击');
+                return;
+            }
+            
             try {
-                console.log('显示录取方案详情:', baseSchemeIndex, adjustmentIndex, schemeIndex);
+                isShowingModal = true;
+                // console.log('显示录取方案详情:', baseSchemeIndex, adjustmentIndex, schemeIndex);
                 
                 const baseSchemeData = analysisData.base_schemes_with_adjustments.find(adj => adj.base_scheme_index === baseSchemeIndex);
                 const adjustmentPlan = baseSchemeData.adjustment_plans[adjustmentIndex];
@@ -1931,9 +2534,15 @@
                 document.getElementById('schemeDetailBody').innerHTML = detailHtml;
                 modal.show();
                 
+                // 模态框显示后重置状态
+                setTimeout(() => {
+                    isShowingModal = false;
+                }, 500);
+                
             } catch (error) {
                 console.error('显示录取方案详情时发生错误:', error);
                 alert(`显示详情失败: ${error.message}\n请检查浏览器控制台获取详细信息`);
+                isShowingModal = false; // 错误时也重置状态
             }
         }
 
@@ -1942,7 +2551,8 @@
         // 生成详情内容的公共函数
         function generateDetailContent(plan, majorResults, unsatisfiedStudents, slideStudents, transferStudents = []) {
             try {
-                console.log('生成详情内容，参数:', { plan, majorResults, unsatisfiedStudents, slideStudents, transferStudents });
+                // 减少控制台输出，避免性能问题
+                // console.log('生成详情内容，参数:', { plan, majorResults, unsatisfiedStudents, slideStudents, transferStudents });
                 
                 if (!plan) {
                     throw new Error('招生计划数据为空');
@@ -2075,7 +2685,7 @@
                     detailHtml += `<div class="alert alert-warning">调剂学生数据处理出错: ${transferError.message}</div>`;
                 }
 
-                console.log('详情内容生成完成');
+                // console.log('详情内容生成完成');
                 return detailHtml;
                 
             } catch (error) {

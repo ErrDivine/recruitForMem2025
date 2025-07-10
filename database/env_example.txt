@@ -1,0 +1,44 @@
+# 南京大学招生助手系统环境配置文件
+# 请复制此文件为 .env 并修改相应的配置值
+
+# 应用环境 (dev/prod/test)
+ENV=dev
+
+# 开发环境数据库配置
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_mysql_password
+DB_NAME=nju_recruitment
+
+# 生产环境数据库配置
+PROD_DB_HOST=your_prod_host
+PROD_DB_PORT=3306
+PROD_DB_USER=your_prod_user
+PROD_DB_PASSWORD=your_prod_password
+PROD_DB_NAME=nju_recruitment
+
+# 测试环境数据库配置
+TEST_DB_HOST=localhost
+TEST_DB_PORT=3306
+TEST_DB_USER=root
+TEST_DB_PASSWORD=your_test_password
+TEST_DB_NAME=nju_recruitment_test
+
+# Flask应用配置
+FLASK_SECRET_KEY=your_secret_key_here
+FLASK_DEBUG=True
+FLASK_HOST=127.0.0.1
+FLASK_PORT=5021
+
+# 文件上传配置
+MAX_UPLOAD_SIZE=52428800  # 50MB
+UPLOAD_FOLDER=uploads
+
+# 日志配置
+LOG_LEVEL=INFO
+LOG_FILE=logs/app.log
+
+# 安全配置
+SESSION_TIMEOUT=3600  # 1小时
+PASSWORD_SALT=your_password_salt_here 
